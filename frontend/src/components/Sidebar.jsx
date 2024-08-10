@@ -21,7 +21,7 @@ function Sidebar() {
                   <li className='p-2 flex items-center gap-2 hover:bg-gray-500'>
                       <NavLink to={'/addsubjects'} className={`text-white no-underline`}><AutoStoriesIcon style={{ color: 'white' }} />{"  "}Add Subjects</NavLink></li>
                   <li className='p-2 flex items-center gap-2 hover:bg-gray-500'>
-                      <NavLink to={'/exams'} className={`text-white no-underline`}><DomainAddIcon style={{ color: 'white' }} />{"  "}Add Exams</NavLink>
+                      <NavLink to={'/exam'} className={`text-white no-underline`}><DomainAddIcon style={{ color: 'white' }} />{"  "}Add Exams</NavLink>
                   </li>
                   <li className='p-2 flex items-center gap-2 hover:bg-gray-500'>
                       <NavLink to={'/users'} className={`text-white no-underline`}><PersonIcon style={{ color: 'white' }} />{"  "}Users</NavLink>
