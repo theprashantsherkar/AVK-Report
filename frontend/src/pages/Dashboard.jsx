@@ -6,19 +6,19 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { Box } from '@mui/material';
+import Header from '../components/Header.jsx';
 
 
 
 function Dashboard() {
-    const [age, setAge] = useState('');
+    const [assessment, setAssessment] = useState('')    
+    const [subject, setSubject] = useState('')    
 
-    const handleChange = (event) => {
-        setAge(event.target.value);
-    };
 
   return (
       <>
           <div>
+              <Header />
               <div className='flex items-start w-full min-h-screen'>
                   <div className='w-1/6'>
                       <Sidebar />
@@ -35,9 +35,9 @@ function Dashboard() {
                                   <Select
                                       labelId="demo-simple-select-label"
                                       id="demo-simple-select"
-                                      value={age}
+                                      value={assessment}
                                       label="Select Assessment"
-                                      onChange={handleChange}
+                                      onChange={(e)=>setAssessment(e.target.value)}
                                   >
                                       <MenuItem value={10}>Ten</MenuItem>
                                       <MenuItem value={20}>Twenty</MenuItem>
@@ -52,9 +52,9 @@ function Dashboard() {
                                   <Select
                                       labelId="demo-simple-select-label"
                                       id="demo-simple-select"
-                                      value={age}
+                                      value={subject}
                                       label="Select Subject"
-                                      onChange={handleChange}
+                                      onChange={(e)=>setSubject(e.target.value)}
                                   >
                                       <MenuItem value={10}>Ten</MenuItem>
                                       <MenuItem value={20}>Twenty</MenuItem>
@@ -72,8 +72,41 @@ function Dashboard() {
                           <button className='btn btn-danger'>Update All</button>
                       </div>
                       <hr />
-                      <div>
-                          Add Data Table here.
+                      <div className='w-full'>
+                          <table className='w-full table table-striped table-hover'>
+                              <thead className=''>
+                                  <tr className='py-2 text-center'>
+                                      <th scope='col'>Roll no</th>
+                                      <th scope='col'>Class</th>
+                                      <th scope='col'>Section</th>
+                                      <th scope='col'>title</th>
+                                      <th scope='col'>Grades</th>
+                                  </tr>
+                              </thead>
+                              <tbody className='py-2 table-group-divider'>
+                                  <tr className='text-center'>
+                                      <td scope='row'>1</td>
+                                      <td>Class 5</td>
+                                      <td>A</td>
+                                      <td>This is a title</td>
+                                      <td>A </td>
+                                  </tr>
+                                  <tr className='text-center'>
+                                      <td scope='row'>2</td>
+                                      <td>Class 5</td>
+                                      <td>A</td>
+                                      <td>This is a second</td>
+                                      <td>A </td>
+                                  </tr>
+                                  <tr className='text-center'>
+                                      <td scope='row'>3</td>
+                                      <td>Class 5</td>
+                                      <td>A</td>
+                                      <td>This is a second</td>
+                                      <td>A </td>
+                                  </tr>
+                              </tbody>
+                          </table>
                       </div>
                   </div>
               </div>

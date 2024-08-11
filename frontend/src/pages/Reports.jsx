@@ -6,6 +6,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { Box } from '@mui/material';
+import Header from '../components/Header';
 
 function Reports() {
     const [age, setAge] = useState('');
@@ -17,6 +18,7 @@ function Reports() {
   return (
       <>
           <div>
+              <Header />
               <div className='flex items-start w-full min-h-screen'>
                   <div className='w-1/6'>
                       <Sidebar />

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import Header from '../components/Header';
 
 function Exam() {
     const [Class, setClass] = useState('')
@@ -13,7 +14,7 @@ function Exam() {
     }
 
   return (
-      <>
+      <><Header/>
           <div className='flex items-start'>
               <div className='w-1/6'><Sidebar /></div>
               <div className='w-5/6 p-4'>

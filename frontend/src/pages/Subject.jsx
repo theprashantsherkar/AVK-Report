@@ -5,6 +5,7 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { Box } from '@mui/material';
 import TextField from '@mui/material/TextField';
+import Header from '../components/Header';
 
 function Subject() {
     const [subject, setSubject] = useState('');
@@ -13,6 +14,7 @@ function Subject() {
     return (
         <>
             <div>
+                <Header/>
                 <div className='flex items-start w-full min-h-screen'>
                     <div className='w-1/6'>
                         <Sidebar />

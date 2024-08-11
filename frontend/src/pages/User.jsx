@@ -1,19 +1,21 @@
 import React, { useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import Header from '../components/Header';
 
 function User() {
 
     const [session, setSession] = useState('');
     return (
         <>
+            <Header/>
             <div className='flex items-start w-full'>
                 <div className='w-1/6'>
                     <Sidebar />
                 </div>
                 <div className='w-4/5 p-4'>
                     <div className='text-3xl font-semibold '>
-                        Add Subjects
+                        Users
                     </div>
                     <hr />
                     <div className='flex items-center  gap-4'>
@@ -25,11 +27,11 @@ function User() {
                                     id="demo-simple-select"
                                     value={session}
                                     label="Select Assessment"
-                                    onChange={(e) => setSession(e.target.value)}
+                                    onChange={(e)=>setSession(e.target.value)}
                                 >
-                                    <MenuItem value={2024 - 25}>2024-25</MenuItem>
-                                    <MenuItem value={2023 - 24}>2023-24</MenuItem>
-                                    <MenuItem value={2022 - 23}>2022-23</MenuItem>
+                                    <MenuItem value={"2024-25"}>2024-25</MenuItem>
+                                    <MenuItem value={"2023-24"}>2023-24</MenuItem>
+                                    <MenuItem value={"2022-23"}>2022-23</MenuItem>
                                 </Select>
                             </FormControl>
                         </Box>
