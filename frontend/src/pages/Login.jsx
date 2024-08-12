@@ -27,37 +27,43 @@ function Login() {
 
     return (
         <>
-            <div className='bgcolor w-full min-h-screen flex justify-center items-center flex-col py-28 z-0'>
-                <div className='w-1/3 rounded-lg min-h-fit bg-white flex items-center justify-center flex-col py-6 shadow-2xl' >
-                    <img src={logo} alt="" className='w-16 h-16' />
-                    <span className='text-center text-2xl font-semibold'>User Login</span>
-                    <hr />
-                    <div className='flex flex-col justify-center items-center gap-4 my-7'>
-                        <TextField id="outlined-basic" label="Email Address" variant="outlined" fullWidth type={'email'} value={email} onChange={(e)=>setEmail(e.target.value)} />
-                        <FormControl variant="outlined" fullWidth>
-                            <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-                            <OutlinedInput
-                                id="outlined-adornment-password"
-                                type={showPassword ? 'text' : 'password'}
-                                endAdornment={
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            aria-label="toggle password visibility"
-                                            onClick={handleClickShowPassword}
-                                            onMouseDown={handleMouseDownPassword}
-                                            edge="end"
-                                        >
-                                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                }
-                                label="Password"
-                            />
-                        </FormControl>
-                        <button className='btn btn-primary'>Login</button>
+            <div className='bgcolor w-full min-h-screen flex justify-between items-center flex-col  z-0'>
+                <div className='flex items-center justify-center my-auto h-5/6 w-full'>
+                    <div className='w-1/3 h-full rounded-lg z-10 bg-white flex items-center justify-center flex-col  shadow-2xl' >
+                        <div className=' flex flex-col items-center justify-center w-full h-full p-5 border-b border-black'>
+                            <img src={logo} alt="" className='w-16 h-16' />
+                            <span className='text-center text-2xl font-semibold'>User Login</span>
+
+                        </div>
+                        <div className='flex flex-col justify-center items-center gap-4 my-7'>
+                            <TextField id="outlined-basic" label="Email Address" variant="outlined" fullWidth type={'email'} value={email} onChange={(e) => setEmail(e.target.value)} />
+                            <FormControl variant="outlined" fullWidth>
+                                <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                                <OutlinedInput
+                                    id="outlined-adornment-password"
+                                    type={showPassword ? 'text' : 'password'}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={handleClickShowPassword}
+                                                onMouseDown={handleMouseDownPassword}
+                                                edge="end"
+                                            >
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                    label="Password"
+                                />
+                            </FormControl>
+                            <button className='btn btn-primary'>Login</button>
+                        </div>
                     </div>
                 </div>
-            <Footer />
+                <div className='w-full h-1/6 bg-white'>
+                    <Footer />
+                </div>
             </div>
 
         </>

@@ -20,20 +20,39 @@ function Profile() {
                       Profile
                   </div>
                   <hr />
-                  <table className='w-full table table-bordered'>
-                      <tr className='py-2'>
-                        <th>Name</th>
-                        <td><input type="text" name="name" value={"Prashant"}  id="" /></td>
-                      </tr>
-                      <tr className='py-2'>
-                        <th>Email</th>  
-                        <td>{"admin@avid.co.in"}</td>
-                      </tr>
-                      <tr className='py-2'>
-                        <th>Contact no: </th>
-                        <td><input type="text" value={4524234} name='contact'/></td>
-                      </tr>
-                  </table>
+                  <div className='flex justify-center'>
+                      <section className='w-1/2 min-h-max border rounded-md p-3'>
+                          <table className=' table table-bordered'>
+                              <tr className='py-2'>
+                                  <th>Name</th>
+                                  <td>
+                                      <div className='p-2'>
+                                          <input type="text" class="form-control" id="exampleFormControlInput1" value={"Prashant"}></input>
+                                      </div>
+                                  </td>
+                              </tr>
+                              <tr className='py-2'>
+                                  <th>Email</th>
+                                  <td><div className='p-2'>
+                                      {"admin@avid.co.in"}
+                                  </div>
+                                  </td>
+                              </tr>
+                              <tr className='py-2'>
+                                  <th>Contact no: </th>
+                                  <td>
+                                      <div className='p-2'>
+                                          <input type="text" class="form-control" id="exampleFormControlInput1" value={23511343}></input>
+                                      </div>
+                                  </td>
+                              </tr>
+                          </table>
+                          <div className='flex justify-center'>
+                              <button className='btn btn-primary'>Update</button>
+
+                          </div>
+                      </section>
+                  </div>
               </div>
           </div>
       </>

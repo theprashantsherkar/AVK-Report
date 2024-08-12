@@ -23,7 +23,11 @@ export const getAllUsers =async (req, res) => {
 
 
 export const loginFunc = async(req, res) => {
-    
+    const { email, password } = req.body;
+    const user = await User.find({ email: email })
+    if (!user) {
+        
+    }
 }
 
 export const signInFunc = async (req, res) => {
