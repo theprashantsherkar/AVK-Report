@@ -64,10 +64,12 @@ export const signinFunc = async (req, res) => {
         success: false,
         message: 'User Already Exists, go and login!'
     });
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
 
-    const hashedPass = await bcrypt.hash(password, 10);
+    const hashedPass = await bcrypt.hash(password, salt);
 
-    const user = await Users.create({
+    const user = await User.create({
         name,
         email,
         role,
@@ -163,7 +165,7 @@ export const changePass = async (req, res) => {
         })
         const newHashed = await bcrypt.hash(newPassword, 10);
 
-        const result = await Users.updateOne({ email: User.email }, { $set: { password: newHashed } });
+        const result = await User.updateOne({ email: User.email }, { $set: { password: newHashed } });
         if (result.nModified == 0) return res.json({
             success: false,
             message: "Couldn't find the user."

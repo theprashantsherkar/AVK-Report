@@ -4,7 +4,7 @@ const studentSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        
+
     },
     Class: {
         type: String,
@@ -23,7 +23,6 @@ const studentSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: new Date(Date.now()),
-        
     }
 })
 

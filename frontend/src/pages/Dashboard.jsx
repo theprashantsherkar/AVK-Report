@@ -11,8 +11,8 @@ import Header from '../components/Header.jsx';
 
 
 function Dashboard() {
-    const [assessment, setAssessment] = useState('')    
-    const [subject, setSubject] = useState('')    
+    const [assessment, setAssessment] = useState('')
+    const [subject, setSubject] = useState('')
 
 
   return (

@@ -5,7 +5,7 @@ import bodyParser from 'body-parser';
 import Color from 'color';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-
+import SubjectRouter from './routes/subject.js';
 
 
 export const app = express();
@@ -17,10 +17,11 @@ app.use(cors({
     origin: process.env.FRONTEND_URL,
 
 }))
-
+app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/users', userRoute);
+app.use('/subject', SubjectRouter);
 
 
