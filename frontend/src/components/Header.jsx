@@ -3,10 +3,25 @@ import { Link } from 'react-router-dom'
 import PersonIcon from '@mui/icons-material/Person';
 import '../index.css'
 import logo from '../assets/fevicon (1).jpeg';
+import axios from 'axios';
+import { backendURL } from '../App';
+import toast from 'react-hot-toast';
 
 function Header() {
 
     const [User, setUser] = useState({});
+    const handleLogout =async() => {
+        const { data } = await axios.get(`${backendURL}/users/logout`, {
+            headers: {
+                "Content-Type":"application/json"
+            },
+            withCredentials: true,
+        })
+        if (!data.success) {
+            return toast.error('Something went wrong');
+        }
+        toast.success(data.message);
+    }
   return (
       <>
           <div className='bgcolor w-full min-h-max flex items-center justify-between px-3 py-2'>
@@ -20,7 +35,7 @@ function Header() {
                       <ul className="dropdown-menu">
                           <li><Link className="dropdown-item" to={'/profile'} type="button">View Profile</Link></li>
                           <li><Link className="dropdown-item" to={'/changePassword'} type="button">Change Password</Link></li>
-                          <li><Link className="dropdown-item" to={'/login'} type="button">Logout</Link></li>
+                          <li><Link className="dropdown-item" to={'/login'} type="button" onClick={handleLogout}>Logout</Link></li>
                       </ul>
                   </div>
               </div>

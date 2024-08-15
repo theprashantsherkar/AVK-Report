@@ -18,13 +18,18 @@ const examSchema = new mongoose.Schema({
         required: true,
 
     },
+    createdBy: {
+        type: String,
+        
+    },
     subjects: {
-        //todo:mapping of the subjects ka collections
+        type: [mongoose.Types.ObjectId],
+        ref:"Subjects"
     },
 
     createdAt: {
         type: String,
-        default: `${new Date(Date.now()).getDate()}-${new Date(Date.now()).getMonth()}-${new Date(Date.now()).getFullYear()}`
+        default: `${new Date(Date.now()).getDate()}-${new Date(Date.now()).getMonth()+1}-${new Date(Date.now()).getFullYear()}`
     }
 })
 

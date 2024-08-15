@@ -1,11 +1,30 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import Header from '../components/Header';
+import axios from 'axios';
+import { backendURL } from '../App';
 
 function User() {
 
     const [session, setSession] = useState('');
+    const [users, setUsers] = useState([]);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            const { data } = await axios.get(`${backendURL}/users/getallusers`, {
+                headers: {
+                    "Content-Type":"application/json",
+                },
+                withCredentials: true,
+
+            })
+
+            setUsers(data.users);
+            console.log(data);
+        }
+        fetchUsers();
+    })
     return (
         <>
             <Header/>
@@ -42,7 +61,29 @@ function User() {
 
                     <hr />
                     <div>
-                        Add Data Table here.
+                        {users && (
+                            <>
+                                <table className='w-full table-bordered table table-hover table-striped'>
+                                    <thead>
+                                        <tr className='py-2 font-semibold'>
+                                            <th>Sr. no</th>
+                                            <th>Name</th>
+                                            <th>Role</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {users.map((element, index) => (<>
+                                            <tr>
+                                                <td>{ index + 1 }</td>
+                                                <td>{ element.name}</td>
+                                                <td>{ element.role}</td>
+                                        </tr>
+                                        </>))}
+                                    </tbody>
+
+                                </table>
+                            </>
+                        ) }
                     </div>
                 </div>
             </div>

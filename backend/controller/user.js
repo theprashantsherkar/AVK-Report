@@ -26,6 +26,7 @@ export const getUsers = async (req, res, next) => {
         success: true,
         message: "users found",
         names,
+        users
     })
 }
 
@@ -163,7 +164,9 @@ export const changePass = async (req, res) => {
             success: false,
             message: 'Passowrd not confirmed!'
         })
-        const newHashed = await bcrypt.hash(newPassword, 10);
+        const saltRounds = 10;
+        const salts = await bcrypt.genSalt(saltRounds);
+        const newHashed = await bcrypt.hash(newPassword, salts);
 
         const result = await User.updateOne({ email: User.email }, { $set: { password: newHashed } });
         if (result.nModified == 0) return res.json({

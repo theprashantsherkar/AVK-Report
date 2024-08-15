@@ -5,20 +5,44 @@ import Footer from '../components/Footer'
 import logo from '../assets/fevicon (1).jpeg'
 import IconButton from '@mui/material/IconButton';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import axios from 'axios';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import { FormControl } from '@mui/material'
 import TextField from '@mui/material/TextField';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { backendURL } from '../App.jsx'
+import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
+
 
 
 function Login() {
 
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
+    const navigate = useNavigate();
+    const [password, setPassword] = useState('');
 
+    const handleLogin =async (e) => {
+        e.preventDefault();
+        const { data } = await axios.post(`${backendURL}/users/login`, {
+            email,
+            password,
+        }, {
+            headers: {
+                "Content-Type":"application/json"
+            },
+            withCredentials: true,
 
+        })
+        if (!data.success) {
+            return toast.error(data.message);
+        }
+        toast.success(data.message);
+        navigate('/home');
+    }
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
     const handleMouseDownPassword = (event) => {
@@ -42,6 +66,8 @@ function Login() {
                                 <OutlinedInput
                                     id="outlined-adornment-password"
                                     type={showPassword ? 'text' : 'password'}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     endAdornment={
                                         <InputAdornment position="end">
                                             <IconButton
@@ -57,7 +83,7 @@ function Login() {
                                     label="Password"
                                 />
                             </FormControl>
-                            <button className='btn btn-primary'>Login</button>
+                            <button className='btn btn-primary' type='submit' onClick={handleLogin}>Login</button>
                         </div>
                     </div>
                 </div>

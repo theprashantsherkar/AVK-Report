@@ -1,9 +1,9 @@
 import { Subject } from "../model/subjects.js";
 
 export const addSubject = async(req, res) => {
-    const { sub } = req.body;
+    const { subject } = req.body;
     const isAdded = await Subject.create({
-        subject: sub,
+        subject: subject,
     })
 
     if (!isAdded) {
@@ -37,3 +37,12 @@ export const getAllSubjects = async(req, res) => {
 }
 
 
+export const removeSub =async (req, res) => {
+    const id = req.params.id;
+    const subject = await Subject.findById(id);
+    await subject.deleteOne();
+    res.status(200).json({
+        success: true,
+        message:"Subject Deleted successfully"
+    })
+}

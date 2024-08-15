@@ -9,7 +9,9 @@ import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Subject from './pages/Subject'
 import Assessment from './pages/Assessment'
+import {Toaster} from 'react-hot-toast'
 
+export const backendURL = 'http://localhost:7000'
 
 
 function App() {
@@ -27,7 +29,8 @@ function App() {
             <Route path='/users' element={<User />} />
             <Route path='/assessment' element={<Assessment />} />
           <Route path='/addsubjects' element={<Subject />} />
-          </Routes>
+        </Routes>
+        <Toaster/>
         </Router>
     </>
   )

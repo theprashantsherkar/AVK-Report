@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import React from 'react'
 import Sidebar from '../components/Sidebar'
 import InputLabel from '@mui/material/InputLabel';
@@ -6,10 +6,56 @@ import FormControl from '@mui/material/FormControl';
 import { Box } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import Header from '../components/Header';
+import axios from 'axios';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import EditIcon from '@mui/icons-material/Edit';
+import { backendURL } from '../App';
+import toast from 'react-hot-toast';
 
 function Subject() {
     const [subject, setSubject] = useState('');
+    const [subjectData, setSubjectData] = useState([]);
+    const handleSubjects = async () => {
+        if (!subject) {
+            return toast.error('enter subjects first')
+        }
+        const { data } = await axios.post(`${backendURL}/subject/addSubject`, {
+            subject
+        }, {
+            headers: {
+                "Content-Type":"application/json"
+            },
+            withCredentials: true,
 
+        })
+        toast.success(data.message);
+    }
+
+    const removeSubject = async(id) => {
+        const res = await axios.delete(`${backendURL}/subject/${id}`, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            withCredentials: true,
+        })
+        toast.success(res.data.message);
+
+    }
+
+    useEffect(() => {
+        const fetchSubjects = async() => {
+            const {data} = await axios.get(`${backendURL}/subject/getSubjects`, 
+                {
+                    headers: {
+                        "Content-Type":"applcation/json"
+                    },
+                    withCredentials:true,
+                }
+            )
+            setSubjectData(data.subjects)
+        }
+        fetchSubjects();
+    })
 
     return (
         <>
@@ -32,12 +78,37 @@ function Subject() {
                             </Box>
 
 
-                            <button className='btn btn-primary'>Save Subject</button>
+                            <button className='btn btn-primary' onClick={handleSubjects}>Save Subject</button>
                         </div>
                         
                         <hr />
                         <div>
-                            Add Data Table here.
+                            {subjectData && (
+                                <table className='w-full overflow-x-hidden table table-bordered table-hover table-stripped'>
+                                    <thead>
+                                        <tr className='py-2'>
+                                            <th>
+                                                #
+                                            </th>
+                                            <th>Subject</th>
+                                            <th>Config</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {subjectData.map((element, index) => (
+                                            <tr>
+                                                <td>{index + 1}</td>
+                                                <td>{element.subject}</td>
+                                                <td>
+                                                    <button onClick={() => removeSubject(element._id)} className='btn btn-danger p-1'><DeleteForeverIcon/></button>
+                                                    {"     "}
+                                                    <button className='btn btn-warning p-1'><EditIcon /></button>
+                                                </td>
+                                        </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
                         </div>
                     </div>
                 </div>

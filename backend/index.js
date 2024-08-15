@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import Color from 'color';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import examRouters from './routes/exam.js'
 import SubjectRouter from './routes/subject.js';
 
 
@@ -14,8 +15,8 @@ config({
     path:'./database/config.env'
 })
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
-
+    origin: "http://localhost:5173",
+    credentials: true,
 }))
 app.use(express.json());
 app.use(cookieParser());
@@ -23,5 +24,4 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/users', userRoute);
 app.use('/subject', SubjectRouter);
-
-
+app.use('/exam', examRouters);
