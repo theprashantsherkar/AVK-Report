@@ -1,3 +1,4 @@
+import { User } from '../model/userModel.js';
 import { Exam } from '../model/examModel.js';
 import { Subject } from '../model/subjects.js';
 
@@ -44,18 +45,23 @@ export const createExam = async(req, res) => {
 }
 
 export const addSubjects = async(req, res) => {
-    const { ids } = req.body
+    const { selectedSubjects } = req.body;
     const id = req.query.id;
 
-    const subjects = await Subject.find({ _id: { $in: ids } });
 
-    if (subjects.length !== ids.length) {
+    if (!selectedSubjects || selectedSubjects.length == 0) {
         return res.json({
             success: false,
-            message:"Some subjects not found"
+            message: "Select Subjects first."
         })
     }
+
+    const subjects = await Subject.find({ subject: { $in: selectedSubjects } });
+
+    const ids = subjects.map(element => element._id);
+
     const exam = await Exam.findById(id);
+
     ids.forEach(element => {
         exam.subjects.push(element);
     });
@@ -111,5 +117,54 @@ export const removeExam =async (req, res) => {
     res.status(200).json({
         success: true,
         message:"Exam deleted"
+    })
+}
+
+export const getOldSubjects = async(req, res) => {
+    const id = req.params.id;
+
+    const exam = await Exam.findById(id).populate('subjects');
+
+    if (Array.isArray(exam)) {
+        const subjects = exam.map((element) => element.subjects);
+        var subjectNames = subjects.map((element) => element.subejct);
+    }
+    else {
+        var subjectNames = exam.subjects.map(subject => subject.subject);
+    }
+
+    if (!subjectNames || subjectNames.length == 0) {
+        res.status(500).json({
+            success: false,
+            message:"Internal server Error"
+        })
+    }
+
+    res.status(200).json({
+        success: true,
+        message: "subjects listed",
+        subjectNames
+    })
+}
+
+
+export const getTeachers =async (req, res) => {
+    const teachers = await User.find({});
+    if (!teachers || teachers.length == 0) {
+        res.status(404).json({
+            success: false,
+            message:"no teachers found"
+        })
+    }
+
+    const names = [];
+    teachers.map((element) => {
+        names.push(element.name);
+    })
+
+    res.status(200).json({
+        success: true,
+        message: "teahcers found!",
+        names
     })
 }

@@ -17,6 +17,8 @@ function Exam() {
     const [section, setSection] = useState('');
     const [showDialog, setShowDialog] = useState(false);
     const [examData, setExamData] = useState([]);
+    const [names, setNames] = useState([]);
+    const [subjects, setSubjects] = useState([]);
     
     const deleteHandler = async(id) => {
         const res = await axios.delete(`${backendURL}/exam/${id}`, {
@@ -26,8 +28,12 @@ function Exam() {
             withCredentials:true
         })
     }
+
  
-    const submitHandler = async() => {
+    const submitHandler = async () => {
+        if (!Class || !teacher || !session || !section) {
+            return toast.error('Enter All fields first!')
+        }
         const res = await axios.post(`${backendURL}/exam/newExam`, {
             Class,
             teacher,
@@ -65,6 +71,35 @@ function Exam() {
 
         fetchExams();
     }, [deleteHandler, submitHandler]);
+
+    useEffect(() => {
+        async function fetchSubjects() {
+            const { data } = await axios.get(`${backendURL}/subject/getSubjects`, {
+                headers: {
+                    "Content-Type":"application/json"
+                },
+                withCredentials: true,
+
+            })
+            setSubjects(data.subjects);
+        }
+        fetchSubjects();
+       
+    }, [subjects])
+
+    useEffect(() => {
+        async function fetchTeachers() {
+            const response = await axios.get(`${backendURL}/exam/getTeachers`, {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                withCredentials: true,
+            })
+            setNames(response.data.names);
+        }
+
+        fetchTeachers();
+    }, []);
 
   return (
       <><Header/>
@@ -117,10 +152,14 @@ function Exam() {
                                       label="Select teacher"
                                       onChange={(e)=>setTeacher(e.target.value)}
                                   >
-                                      <MenuItem value={10}>Ten</MenuItem>
-                                      <MenuItem value={20}>Twenty</MenuItem>
-                                      <MenuItem value={30}>Thirty</MenuItem>
-                                    {/* render teacher */}
+                                      {names.length>0 ?
+                                          (<>
+                                              {names.map((element) => (
+                                                  <MenuItem key={element} value={element}>{element}</MenuItem>
+                                              ))}
+                                          </>)
+                                         
+                                      :(<MenuItem disabled>no teachers found </MenuItem>)}
                                   </Select>
                               </FormControl>
                           </Box>
@@ -191,7 +230,7 @@ function Exam() {
                                       <td>{element.session}</td>
                                       <td>{element.teacher}</td>
                                       <td>{element.createdAt}</td>
-                                      <td><Link onClick={handleAddSubjects}>+Subjects</Link><Link to={'/assessment'}><button className='btn btn-danger'>Assessment</button></Link>{showDialog && <UploadDialog showDialog={showDialog} setShowDialog={setShowDialog}/> }</td>
+                                      <td><Link onClick={handleAddSubjects}>+Subjects</Link><Link to={'/assessment'}><button className='btn btn-danger'>Assessment</button></Link>{showDialog && <UploadDialog showDialog={showDialog} id={element._id} setShowDialog={setShowDialog}/> }</td>
                                       <td><button className='btn btn-danger px-1 py-1' onClick={() => deleteHandler(element._id)}><DeleteForeverIcon /></button> {"   "}
                                       <button className='btn btn-warning p-1 '><EditIcon/></button></td>
                                   </tr>
