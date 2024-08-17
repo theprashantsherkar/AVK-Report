@@ -27,6 +27,10 @@ function Exam() {
             },
             withCredentials:true
         })
+        if (!res.data.success) {
+            return toast.error('Something went wrong');            
+        }
+        toast.success(res.data.message);
     }
 
  
@@ -58,6 +62,7 @@ function Exam() {
 
     useEffect(() => {
         const fetchExams = async () => {
+        try {
             const { data } = await axios.get(`${backendURL}/exam/getExam`, {
                 headers: {
                     "Content-Type": "application/json",
@@ -67,10 +72,14 @@ function Exam() {
 
             })
             setExamData(data.exams);
+
+        } catch (error) {
+            console.log(error);            
+        }    
         }
 
         fetchExams();
-    }, [deleteHandler, submitHandler]);
+    }, [deleteHandler, submitHandler, examData]);
 
     useEffect(() => {
         async function fetchSubjects() {
@@ -152,14 +161,15 @@ function Exam() {
                                       label="Select teacher"
                                       onChange={(e)=>setTeacher(e.target.value)}
                                   >
-                                      {names.length>0 ?
-                                          (<>
-                                              {names.map((element) => (
-                                                  <MenuItem key={element} value={element}>{element}</MenuItem>
-                                              ))}
-                                          </>)
-                                         
-                                      :(<MenuItem disabled>no teachers found </MenuItem>)}
+                                      {names.length > 0 ? (
+                                          names.map((element) => (
+                                              <MenuItem key={element} value={element}>
+                                                  {element}
+                                              </MenuItem>
+                                          ))
+                                      ) : (
+                                          <MenuItem disabled>No teachers found</MenuItem>
+                                      )}
                                   </Select>
                               </FormControl>
                           </Box>

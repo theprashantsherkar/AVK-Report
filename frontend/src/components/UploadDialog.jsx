@@ -19,29 +19,37 @@ function UploadDialog({ showDialog, setShowDialog, id }) {
     subject.map((element, index) => {
         subjectList.push(element.subject)
     })
-    const handleUpdate = async(id) => {
-        console.log('Updated subjects:', selectedSubjects);
-        const response = await axios.post(`${backendURL}/exam/addsubjects`,
-            {
-                selectedSubjects,
-            },
-            {
-                params: {
-                    id
-                },
-                headers: {
-                    "Content-Type":"application/json"
-                },
-                withCredentials: true,
-            }
-        )
-        if (!response.data.success) {
-            return toast.error('Something went Wrong')
-        }
-        toast.success(response.data.message);
 
-        setShowDialog(false);
+    const handleSubjectRemove = (subjectToRemove) => {
+        setSelectedSubjects((prevSubjects) =>
+            prevSubjects.filter((subject) => subject !== subjectToRemove)
+        );
     };
+
+    const handleUpdate = async (id) => {
+        try {
+            const response = await axios.post(`${backendURL}/exam/addsubjects?id=${id}`,
+                {
+                    selectedSubjects,
+                },
+                {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    withCredentials: true,
+                }
+            );
+            if (!response.data.success) {
+                return toast.error('Something went Wrong')
+            }
+            toast.success(response.data.message);
+
+            setShowDialog(false);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
 
     const handleClose = () => {
         setShowDialog(false);
@@ -65,7 +73,6 @@ function UploadDialog({ showDialog, setShowDialog, id }) {
         }
 
         async function loadSubjects(id) {
-
             try {
                 const { data } = await axios.get(`${backendURL}/exam/old/${id}`, {
                     headers: {
@@ -73,12 +80,14 @@ function UploadDialog({ showDialog, setShowDialog, id }) {
                     },
                     withCredentials: true,
                 });
-                setAddedSubjects(data.subjectNames);
+                setAddedSubjects(data.subjectNames || []);
+                setSelectedSubjects(data.subjectNames || []); // Pre-select already added subjects
                 console.log(data.subjectNames);
             } catch (error) {
                 console.error(error);
             }
         }
+
 
         if (id) {
             fetchSubjects();
@@ -97,7 +106,11 @@ function UploadDialog({ showDialog, setShowDialog, id }) {
                     onChange={handleSubjectChange}
                     renderTags={(value, getTagProps) =>
                         value.map((option, index) => (
-                            <Chip label={option} {...getTagProps({ index })} />
+                            <Chip
+                                label={option}
+                                {...getTagProps({ index })}
+                                onDelete={() => handleSubjectRemove(option)}
+                            />
                         ))
                     }
                     renderInput={(params) => (
@@ -126,7 +139,7 @@ function UploadDialog({ showDialog, setShowDialog, id }) {
                                 </tr>
                             ))}
                             {selectedSubjects.map((subject, index) => (
-                                <tr key={index}>
+                                <tr key={index + addedSubjects.length}>
                                     <td>{addedSubjects.length + index + 1}</td>
                                     <td>{subject}</td>
                                 </tr>

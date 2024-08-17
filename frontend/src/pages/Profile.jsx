@@ -1,15 +1,12 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import Header from '../components/Header'
 import Sidebar from '../components/Sidebar'
+import { LoginContext } from '../main';
 
 
 function Profile() {
-    const [user, setUser] = useState({
-        name: "Prashant",
-        email: "admin@avid.co.in",
-        contact: 3724667933,
-
-    });
+    const { user} = useContext(LoginContext)
+   //todo: update user here itself(later part)
   return (
       <>
           <Header />
@@ -27,14 +24,14 @@ function Profile() {
                                   <th>Name</th>
                                   <td>
                                       <div className='p-2'>
-                                          <input type="text" class="form-control" id="exampleFormControlInput1" value={"Prashant"}></input>
+                                          <input type="text" class="form-control" id="exampleFormControlInput1" value={user.name}></input>
                                       </div>
                                   </td>
                               </tr>
                               <tr className='py-2'>
                                   <th>Email</th>
                                   <td><div className='p-2'>
-                                      {"admin@avid.co.in"}
+                                      {user.email}
                                   </div>
                                   </td>
                               </tr>

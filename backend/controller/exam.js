@@ -112,12 +112,22 @@ export const deleteExam = async (req, res) => {
 
 export const removeExam =async (req, res) => {
     const id = req.params.id
-    const exam = await Exam.findById(id);
-    await exam.deleteOne();
-    res.status(200).json({
-        success: true,
-        message:"Exam deleted"
-    })
+    try {
+        const exam = await Exam.findById(id);
+        if (exam) {
+            await exam.deleteOne();
+             return res.status(200).json({
+                success: true,
+                message: "Exam deleted"
+            })
+        }
+        return res.json({
+            success: false,
+            message:"no exam found"
+        })
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 export const getOldSubjects = async(req, res) => {
@@ -134,7 +144,7 @@ export const getOldSubjects = async(req, res) => {
     }
 
     if (!subjectNames || subjectNames.length == 0) {
-        res.status(500).json({
+         return res.status(500).json({
             success: false,
             message:"Internal server Error"
         })
@@ -151,7 +161,7 @@ export const getOldSubjects = async(req, res) => {
 export const getTeachers =async (req, res) => {
     const teachers = await User.find({});
     if (!teachers || teachers.length == 0) {
-        res.status(404).json({
+        return res.status(404).json({
             success: false,
             message:"no teachers found"
         })

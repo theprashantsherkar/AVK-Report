@@ -4,6 +4,7 @@ import userRoute from './routes/user.js'
 import bodyParser from 'body-parser';
 import Color from 'color';
 import cookieParser from 'cookie-parser';
+import assessmentRouter from './routes/assessment.js'
 import cors from 'cors';
 import examRouters from './routes/exam.js'
 import SubjectRouter from './routes/subject.js';
@@ -25,3 +26,4 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/users', userRoute);
 app.use('/subject', SubjectRouter);
 app.use('/exam', examRouters);
+app.use('/assessment', assessmentRouter);
