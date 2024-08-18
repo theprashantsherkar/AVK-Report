@@ -144,9 +144,10 @@ export const getOldSubjects = async(req, res) => {
     }
 
     if (!subjectNames || subjectNames.length == 0) {
-         return res.status(500).json({
+         return res.status(404).json({
             success: false,
-            message:"Internal server Error"
+            message: "No Subjects added yet",
+            subjectNames,
         })
     }
 

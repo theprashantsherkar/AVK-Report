@@ -18,6 +18,26 @@ function Rubrics({ subject }) {
     const [rubrics, setRubrics] = useState('');
     const [rubricList, setRubricList] = useState([]);
 
+    const deleteHandler = async (element) => {
+        try {
+            const response = await axios.delete(`${backendURL}/assessment/${id}/deleteRubric`, {
+                data: {
+                    rubric:element,
+                },
+                headers: {
+                    "Content-Type":"application/json"
+                },
+                withCredentials: true,
+            })
+            if (!response.data.success) {
+                return toast.error('Something went wrong')
+            }
+            toast.success(response.data.message);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const handleSubmit = async () => {
         try {
             const response = await axios.put(`${backendURL}/assessment/rubrics/${id}`, {
@@ -34,6 +54,7 @@ function Rubrics({ subject }) {
             }
             toast.success(response.data.message);
             setRubricList(response.data.rubrics);
+            setRubrics("");
         } catch (error) {
             console.log(error);
         }
@@ -54,7 +75,7 @@ function Rubrics({ subject }) {
         } catch (error) {
             console.log(error)
         }
-    }, [handleSubmit])
+    }, [handleSubmit, deleteHandler]);
 
     return (
         <>
@@ -95,7 +116,7 @@ function Rubrics({ subject }) {
                                             <tr>
                                                 <td>{element}</td>
                                                 <td>Dummy date</td>
-                                                <td><button className='btn btn-danger'>Delete</button></td>
+                                                <td><button className='btn btn-danger' onClick={()=>deleteHandler(element)}>Delete</button></td>
                                             </tr>
                                         ))}
                                     </>) : (<></>)}

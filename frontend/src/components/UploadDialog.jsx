@@ -4,75 +4,29 @@ import axios from 'axios';
 import { backendURL } from '../App';
 import toast from 'react-hot-toast';
 
-
-
 function UploadDialog({ showDialog, setShowDialog, id }) {
-    const [subject, setSubjects] = useState([]);
+    const [subjects, setSubjects] = useState([]);
     const [addedSubjects, setAddedSubjects] = useState([]);
     const [selectedSubjects, setSelectedSubjects] = useState([]);
 
-    const handleSubjectChange = (event, newValue) => {
-        setSelectedSubjects(newValue);
-    };
-
-    const subjectList = [];
-    subject.map((element, index) => {
-        subjectList.push(element.subject)
-    })
-
-    const handleSubjectRemove = (subjectToRemove) => {
-        setSelectedSubjects((prevSubjects) =>
-            prevSubjects.filter((subject) => subject !== subjectToRemove)
-        );
-    };
-
-    const handleUpdate = async (id) => {
-        try {
-            const response = await axios.post(`${backendURL}/exam/addsubjects?id=${id}`,
-                {
-                    selectedSubjects,
-                },
-                {
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    withCredentials: true,
-                }
-            );
-            if (!response.data.success) {
-                return toast.error('Something went Wrong')
-            }
-            toast.success(response.data.message);
-
-            setShowDialog(false);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-
-    const handleClose = () => {
-        setShowDialog(false);
-        
-    };
-
-
     useEffect(() => {
-        async function fetchSubjects() {
+        if (!id) return;
+
+        const fetchSubjects = async () => {
             try {
                 const { data } = await axios.get(`${backendURL}/subject/getSubjects`, {
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
                     },
                     withCredentials: true,
                 });
-                setSubjects(data.subjects);
+                setSubjects(data.subjects || []);
             } catch (error) {
                 console.error(error);
             }
-        }
+        };
 
-        async function loadSubjects(id) {
+        const loadSubjects = async (id) => {
             try {
                 const { data } = await axios.get(`${backendURL}/exam/old/${id}`, {
                     headers: {
@@ -80,33 +34,75 @@ function UploadDialog({ showDialog, setShowDialog, id }) {
                     },
                     withCredentials: true,
                 });
-                setAddedSubjects(data.subjectNames || []);
-                setSelectedSubjects(data.subjectNames || []); // Pre-select already added subjects
-                console.log(data.subjectNames);
+                if (!data.success) {
+                    setAddedSubjects([]);
+                    setSelectedSubjects([]);
+                    console.log(id);
+                }
+                else {
+                    setAddedSubjects(data.subjectNames || []);
+                    setSelectedSubjects(data.subjectNames || []);
+                    console.log(id);
+                }
             } catch (error) {
                 console.error(error);
             }
-        }
+        };
 
-
-        if (id) {
-            fetchSubjects();
-            loadSubjects(id);
-        }
+        fetchSubjects();
+        loadSubjects(id);
     }, [id]);
 
+    const handleSubjectChange = (event, newValue) => {
+        setSelectedSubjects(newValue);
+    };
+
+    const handleSubjectRemove = (subjectToRemove) => {
+        setSelectedSubjects((prevSubjects) =>
+            prevSubjects.filter((subject) => subject !== subjectToRemove)
+        );
+    };
+
+    const handleUpdate = async () => {
+        try {
+            const response = await axios.post(
+                `${backendURL}/exam/addsubjects?id=${id}`,
+                { selectedSubjects },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true,
+                }
+            );
+            if (!response.data.success) {
+                return toast.error('Something went wrong');
+            }
+            toast.success(response.data.message);
+            setShowDialog(false);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleClose = () => {
+        setShowDialog(false);
+    };
+
+
     return (
-        <Dialog open={true} onClose={handleClose} maxWidth="sm" fullWidth>
+        <Dialog open={showDialog} onClose={handleClose} maxWidth="sm" fullWidth>
             <DialogTitle>Update Subjects</DialogTitle>
             <DialogContent>
                 <Autocomplete
                     multiple
-                    options={subjectList}
+                    options={subjects.map(subject => subject.subject)}
                     value={selectedSubjects}
                     onChange={handleSubjectChange}
                     renderTags={(value, getTagProps) =>
                         value.map((option, index) => (
                             <Chip
+                                key={index}
                                 label={option}
                                 {...getTagProps({ index })}
                                 onDelete={() => handleSubjectRemove(option)}
@@ -138,18 +134,12 @@ function UploadDialog({ showDialog, setShowDialog, id }) {
                                     <td>{subject}</td>
                                 </tr>
                             ))}
-                            {selectedSubjects.map((subject, index) => (
-                                <tr key={index + addedSubjects.length}>
-                                    <td>{addedSubjects.length + index + 1}</td>
-                                    <td>{subject}</td>
-                                </tr>
-                            ))}
                         </tbody>
                     </table>
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" color="primary" onClick={() => handleUpdate(id)}>
+                <Button variant="contained" color="primary" onClick={handleUpdate}>
                     Update
                 </Button>
                 <Button variant="outlined" onClick={handleClose}>

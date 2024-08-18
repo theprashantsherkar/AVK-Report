@@ -235,7 +235,7 @@ function Assessment() {
                         <hr />
                         <div>
                             {assList.length > 0 ? (
-                                <table className='table table-bordered table-striped table-hover'>
+                                <table className='table table-bordered table-striped table-hover overflow-y-scroll'>
                                     <thead>
                                         <tr>
                                             <th>Title</th>

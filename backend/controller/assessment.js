@@ -227,14 +227,36 @@ export const getRubrics = async(req, res) => {
 }
 
 
-export const deleteRubrics = async(req, res) => {
+
+
+export const deleteRubric = async (req, res) => {
     const { id } = req.params;
-    if (!id) {
-        return res.json({
+    const { rubric } = req.body;
+
+    try {
+        const updatedAssessment = await Assessment.findByIdAndUpdate(
+            id,
+            { $pull: { rubrics: rubric } },
+            { new: true }
+        );
+
+        if (!updatedAssessment) {
+            return res.status(404).json({
+                success: false,
+                message: "Assessment not found",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Rubric deleted successfully",
+            updatedAssessment,
+        });
+    } catch (error) {
+        res.status(500).json({
             success: false,
-            message:"no id was found"
-        })
+            message: "Error deleting rubric",
+            error: error.message,
+        });
     }
-    const assessment = await Assessment.findById(id);
-assessment.rubrics  
-}
+};
