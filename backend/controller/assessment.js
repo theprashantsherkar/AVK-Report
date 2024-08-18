@@ -195,9 +195,15 @@ export const sendSubs = async (req, res, next) => {
         })
 
     }
+
+    const subjectNames = [];
+
+    subjects.map((element) => {
+        subjectNames.push(element.subject);
+    })
     res.status(200).json({
         success: true,
         message: "subjects sent",
-        subjects
+        subjectNames
     })
 }

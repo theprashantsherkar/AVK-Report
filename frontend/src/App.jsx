@@ -30,7 +30,7 @@ function App() {
         });
 
         setUser(response.data.User);
-        console.log("Fetched user:", response.data.User);
+       
       } catch (error) {
         console.log(error);
       }
@@ -40,9 +40,7 @@ function App() {
   }, []);
 
 
-  useEffect(() => {
-    console.log("Updated user state:", user);
-  }, [user]); 
+
 
   return (
     <>
@@ -56,7 +54,7 @@ function App() {
           <Route path='/report' element={<Reports />} />
           <Route path='/exam' element={<Exam />} />
           <Route path='/users' element={<User />} />
-          <Route path='/assessment' element={<Assessment />} />
+          <Route path='/assessment/:id' element={<Assessment />} />
           <Route path='/addsubjects' element={<Subject />} />
         </Routes>
         <Toaster />

@@ -240,7 +240,7 @@ function Exam() {
                                       <td>{element.session}</td>
                                       <td>{element.teacher}</td>
                                       <td>{element.createdAt}</td>
-                                      <td><Link onClick={handleAddSubjects}>+Subjects</Link><Link to={'/assessment'}><button className='btn btn-danger'>Assessment</button></Link>{showDialog && <UploadDialog showDialog={showDialog} id={element._id} setShowDialog={setShowDialog}/> }</td>
+                                      <td><Link onClick={handleAddSubjects}>+Subjects</Link><Link to={`/assessment/${element._id}`}><button className='btn btn-danger'>Assessment</button></Link>{showDialog && <UploadDialog showDialog={showDialog} id={element._id} setShowDialog={setShowDialog}/> }</td>
                                       <td><button className='btn btn-danger px-1 py-1' onClick={() => deleteHandler(element._id)}><DeleteForeverIcon /></button> {"   "}
                                       <button className='btn btn-warning p-1 '><EditIcon/></button></td>
                                   </tr>
