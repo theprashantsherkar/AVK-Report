@@ -160,7 +160,7 @@ export const addRubrics = async (req, res, next) => {
     }
     const { rubrics } = req.body;
 
-    assessment.rubrics = rubrics;
+    assessment.rubrics.push(rubrics);
     const isUpdated = await assessment.save();
 
     if (!isUpdated) {
@@ -206,4 +206,35 @@ export const sendSubs = async (req, res, next) => {
         message: "subjects sent",
         subjectNames
     })
+}
+
+export const getRubrics = async(req, res) => {
+    const { id } = req.params;
+    const assessment = await Assessment.findById(id);
+    if (!assessment) {
+        return res.json({
+            success: false,
+            message:"no Assessments found"
+        })
+    }
+    const rubrics = assessment.rubrics;
+
+     res.status(200).json({
+        success: true,
+        message: "Rubrics found",
+        rubrics
+    })
+}
+
+
+export const deleteRubrics = async(req, res) => {
+    const { id } = req.params;
+    if (!id) {
+        return res.json({
+            success: false,
+            message:"no id was found"
+        })
+    }
+    const assessment = await Assessment.findById(id);
+assessment.rubrics  
 }

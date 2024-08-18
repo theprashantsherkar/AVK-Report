@@ -12,6 +12,7 @@ import Assessment from './pages/Assessment'
 import { LoginContext } from './main'
 import {Toaster} from 'react-hot-toast'
 import axios from 'axios'
+import Rubrics from './pages/Rubrics'
 
 export const backendURL = 'http://localhost:7000'
 
@@ -55,6 +56,7 @@ function App() {
           <Route path='/exam' element={<Exam />} />
           <Route path='/users' element={<User />} />
           <Route path='/assessment/:id' element={<Assessment />} />
+          <Route path='/rubrics/:id' element={<Rubrics />} />
           <Route path='/addsubjects' element={<Subject />} />
         </Routes>
         <Toaster />

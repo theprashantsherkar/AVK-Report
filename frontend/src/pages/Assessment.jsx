@@ -176,7 +176,7 @@ function Assessment() {
                                             label="Select Assessment"
                                             onChange={(e) => setSubject(e.target.value)}
                                         >
-                                            {subjectList.length > 0 ? (
+                                            {subjectList && subjectList.length > 0 ? (
                                                 subjectList.map((element, index) => (
                                                     <MenuItem key={index} value={element}>{element}</MenuItem>
                                                 ))
@@ -256,9 +256,9 @@ function Assessment() {
                                                 <td>{element.type}</td>
                                                 <td>{element.isRubrics == "Yes" ? 'Yes' : 'No'}</td>
                                                 <td>{element.type == "Numeric" ? element.maxMarks : "-"}</td>
-                                                <td><button className='btn btn-danger px-1 py-1' onClick={() => deleteHandler(element._id)}><DeleteForeverIcon /></button> {"   "}
-                                                    <button className='btn btn-warning p-1 '><EditIcon /></button>{"  "}
-                                                {element.isRubrics == "Yes" ?(<button className='btn btn-outline-danger'>+ Rubrics</button>):(<></>)}
+                                                <td><button className=' bg-orange-500 rounded-md px-1 py-1' onClick={() => deleteHandler(element._id)}><DeleteForeverIcon sx={{ color: 'white' }} /></button> {"   "}
+                                                    <button className='btn btn-warning p-1 '><EditIcon sx={{ color: 'white' }} /></button>{"  "}<br/>
+                                                    {element.isRubrics == "Yes" ? (<Link to={`/rubrics/${element._id}`}><button className='btn btn-danger'>+ Rubrics</button></Link>):(<></>)}
                                                 </td>
                                             </tr>
                                         ))}
