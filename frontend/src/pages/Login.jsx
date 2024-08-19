@@ -25,8 +25,7 @@ function Login() {
     const navigate = useNavigate();
     const [password, setPassword] = useState('');
 
-    const handleLogin =async (e) => {
-        e.preventDefault();
+    const handleLogin =async () => {
         const { data } = await axios.post(`${backendURL}/users/login`, {
             email,
             password,
@@ -40,8 +39,9 @@ function Login() {
         if (!data.success) {
             return toast.error(data.message);
         }
-        toast.success(data.message);
-        navigate('/home');
+    toast.success(data.message);
+    navigate('/home');
+    window.location.reload();
     }
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 

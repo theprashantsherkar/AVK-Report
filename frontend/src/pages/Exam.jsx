@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import Header from '../components/Header';
@@ -9,6 +9,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { backendURL } from '../App';
 import UploadDialog from '../components/UploadDialog';
 import toast from 'react-hot-toast';
+import { LoginContext } from '../main';
 
 function Exam() {
     const [Class, setClass] = useState('');
@@ -19,6 +20,7 @@ function Exam() {
     const [examData, setExamData] = useState([]);
     const [names, setNames] = useState([]);
     const [subjects, setSubjects] = useState([]);
+
     const [selectedExamId, setSelectedExamId] = useState(null); // Track the selected exam ID
 
     const deleteHandler = async (id) => {
@@ -62,6 +64,7 @@ function Exam() {
 
     useEffect(() => {
         const fetchExams = async () => {
+            
             try {
                 const { data } = await axios.get(`${backendURL}/exam/getExam`, {
                     headers: {

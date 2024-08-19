@@ -21,7 +21,6 @@ function User() {
             })
 
             setUsers(data.users);
-            console.log(data);
         }
         fetchUsers();
     })

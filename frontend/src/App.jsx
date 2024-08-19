@@ -6,16 +6,15 @@ import Reports from './pages/Reports'
 import Exam from './pages/Exam'
 import User from './pages/User'
 import React, { useContext, useEffect, useState } from 'react'
-import { BrowserRouter as Router, Routes, Route, useActionData } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Subject from './pages/Subject'
 import Assessment from './pages/Assessment'
 import { LoginContext } from './main'
-import {Toaster} from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 import axios from 'axios'
 import Rubrics from './pages/Rubrics'
 
 export const backendURL = 'http://localhost:7000'
-
 
 function App() {
   const { user, setUser } = useContext(LoginContext);
@@ -30,16 +29,16 @@ function App() {
           withCredentials: true,
         });
 
-        setUser(response.data.User);
-       
+        if (response.data && response.data.User) {
+          setUser(response.data.User);
+        }
       } catch (error) {
         console.log(error);
       }
     };
 
     fetchUser();
-  }, []);
-
+  }, [setUser, user]); // Ensure fetchUser only runs when setUser changes (initially)
 
 
 

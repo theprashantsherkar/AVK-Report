@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import assessmentRouter from './routes/assessment.js'
 import cors from 'cors';
 import examRouters from './routes/exam.js'
+import teacherRoutes from './routes/teacher.js'
 import SubjectRouter from './routes/subject.js';
 
 
@@ -27,3 +28,4 @@ app.use('/users', userRoute);
 app.use('/subject', SubjectRouter);
 app.use('/exam', examRouters);
 app.use('/assessment', assessmentRouter);
+app.use('/teacher', teacherRoutes);

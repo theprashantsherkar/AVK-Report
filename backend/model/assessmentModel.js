@@ -29,7 +29,7 @@ const AssessmentSchema = new mongoose.Schema({
     },
     parentExam: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "exam datas"
+        ref: "Exams"
     },
     Class: {
         type: String,
