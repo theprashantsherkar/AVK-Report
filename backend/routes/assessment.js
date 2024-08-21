@@ -1,5 +1,5 @@
 import express from 'express';
-import { addAssessment, addRubrics, deleteAss, deleteRubric, getAllAssessments, getRubrics, sendSubs, specificAss, UpdateAss } from '../controller/assessment.js';
+import { addAssessment, deleteAss, getAllAssessments, sendSubs, specificAss, UpdateAss } from '../controller/assessment.js';
 
 const router = express.Router();
 
@@ -12,12 +12,8 @@ router
     .delete(deleteAss)
     .put(UpdateAss)
 
-router.delete('/:id/deleteRubric', deleteRubric);
 
-router
-    .route('/rubrics/:id')
-    .put(addRubrics)
-    .get(getRubrics)
+
 
 router.get('/sendsubjects/:id', sendSubs)
 

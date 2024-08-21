@@ -21,7 +21,8 @@ const AssessmentSchema = new mongoose.Schema({
         type: String,
     },
     rubrics: {
-        type: [String],
+        type: [mongoose.Types.ObjectId],
+        ref:"Rubrics",
 
     },
     subject: {

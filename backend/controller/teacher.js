@@ -25,7 +25,6 @@ export const getClasses = async (req, res) => {
             });
         }
 
-        // Use a Set to store unique class details
         const classDetailsSet = new Set(
             assessment.map(element => `${element.Class} - ${element.parentExam.section} - ${element.title}`)
         );
@@ -43,6 +42,7 @@ export const getClasses = async (req, res) => {
             success: true,
             message: "Classes found",
             classes: classDetails,
+            assessment
         });
     } catch (error) {
         console.error('Error fetching classes:', error);
@@ -53,6 +53,46 @@ export const getClasses = async (req, res) => {
     }
 };
 
+
+export const getAssessmentsForTeacher = async (req, res, next) => {
+    const { Class, teacher, section } = req.body;
+    var exams = await Exam.find({ Class: Class, teacher: teacher, section: section });
+    if (!exams) {
+        return res.status(404).json({
+            success: false,
+            message: "no exams are found"
+        })
+    }
+    var assessments = [];
+
+    await Promise.all(exams.map(async (element) => {
+        const ass = await Assessment.find({ parentExam: element._id });
+        assessments = ass;
+
+    })
+    )
+
+    if (!assessments || !assessments.length) {
+        return res.json({
+            success: false,
+            message: "no assessments found."
+        })
+    }
+    const assTitles = [];
+    assessments.map((element) => {
+        assTitles.push({ title: element.title, subjects: element.subject });
+    })
+
+
+
+    res.status(200).json({
+        success: true,
+        message: "Assessments Found",
+        assTitles,
+        assessments,
+    })
+
+}
 
 
 export const getSubjects = async (req, res) => {

@@ -9,6 +9,7 @@ import cors from 'cors';
 import examRouters from './routes/exam.js'
 import teacherRoutes from './routes/teacher.js'
 import SubjectRouter from './routes/subject.js';
+import RubricRouter from './routes/rubric.js'
 
 
 export const app = express();
@@ -29,3 +30,4 @@ app.use('/subject', SubjectRouter);
 app.use('/exam', examRouters);
 app.use('/assessment', assessmentRouter);
 app.use('/teacher', teacherRoutes);
+app.use('/rubrics', RubricRouter);

@@ -3,7 +3,7 @@ import { Exam } from '../model/examModel.js';
 
 
 export const getAllAssessments =async (req, res) => {
-    const assessments = await Assessment.find({});
+    const assessments = await Assessment.find({}).populate("rubrics");
     if (!assessments || assessments.length == 0) {
         return res.status(404).json({
             success: false,
@@ -69,7 +69,7 @@ export const specificAss = async (req, res) => {
         })
     }
     
-    const assessment = await Assessment.find({ parentExam: examId });
+    const assessment = await Assessment.find({ parentExam: examId }).populate("rubrics");
     if (!assessment || assessment.length == 0) {
         return res.status(404).json({
             success: false,
@@ -110,7 +110,8 @@ export const deleteAss = async (req, res, next) => {
 }
 
 export const UpdateAss = async (req, res, next) => {
-    const assessment = await Assessment.findById({ _id: req.params.id })
+    const {id} = req.params
+    const assessment = await Assessment.findById(id);
     if (!assessment) {
         return res.status(404).json({
             success: false,
@@ -140,41 +141,6 @@ export const UpdateAss = async (req, res, next) => {
     })
 }
 
-
-
-export const addRubrics = async (req, res, next) => {
-
-    if (!req.params.id || req.params.id == undefined) {
-        return res.json({
-            success: false,
-            message: "empty params!"
-        })
-    }
-    const assessment = await Assessment.findById({ _id: req.params.id });
-
-    if (!assessment) {
-        return res.status(404).json({
-            success: false,
-            message: "no assessment found",
-        })
-    }
-    const { rubrics } = req.body;
-
-    assessment.rubrics.push(rubrics);
-    const isUpdated = await assessment.save();
-
-    if (!isUpdated) {
-        return res.status(500).json({
-            success: false,
-            message: "Rubrics not added."
-        })
-    }
-    res.status(200).json({
-        success: true,
-        message: "Rubrics added Successfully",
-        rubrics: assessment.rubrics
-    })
-}
 
 
 
@@ -208,55 +174,6 @@ export const sendSubs = async (req, res, next) => {
     })
 }
 
-export const getRubrics = async(req, res) => {
-    const { id } = req.params;
-    const assessment = await Assessment.findById(id);
-    if (!assessment) {
-        return res.json({
-            success: false,
-            message:"no Assessments found"
-        })
-    }
-    const rubrics = assessment.rubrics;
-
-     res.status(200).json({
-        success: true,
-        message: "Rubrics found",
-        rubrics
-    })
-}
 
 
 
-
-export const deleteRubric = async (req, res) => {
-    const { id } = req.params;
-    const { rubric } = req.body;
-
-    try {
-        const updatedAssessment = await Assessment.findByIdAndUpdate(
-            id,
-            { $pull: { rubrics: rubric } },
-            { new: true }
-        );
-
-        if (!updatedAssessment) {
-            return res.status(404).json({
-                success: false,
-                message: "Assessment not found",
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            message: "Rubric deleted successfully",
-            updatedAssessment,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Error deleting rubric",
-            error: error.message,
-        });
-    }
-};
