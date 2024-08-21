@@ -13,7 +13,7 @@ function Rubrics({ subject }) {
 
     const navigate = useNavigate();
     const { id } = useParams();
-
+    const [updatedRubric, setUpdatedRubric] = useState("");
 
     const [rubrics, setRubrics] = useState('');
     const [rubricList, setRubricList] = useState([]);
@@ -35,6 +35,31 @@ function Rubrics({ subject }) {
             toast.success(response.data.message);
         } catch (error) {
             console.log(error);
+        }
+    }
+
+    const updateHandler = async (id) => {
+        try {
+            setRubrics(element.rubric);
+            setRubrics(e.target.value);
+            const response = await axios.put(`${backendURL}/rubrics/update/${id}`, {
+                newRubric: rubrics,
+            }, {
+                headers: {
+                    "Content-Type":"application/json"
+                },
+                withCredentials:true,
+            })
+            if (!response.data.success) {
+                return toast.error('Something went wrong');
+            }
+
+            setUpdatedRubric(response.data.updatedRubric);
+            toast.success(response.data.message);
+
+        } catch (error) {
+            console.log(error);
+            toast.error("Something went wrong")
         }
     }
 
@@ -63,7 +88,7 @@ function Rubrics({ subject }) {
     useEffect(() => {
         try {
             const loadRubrics = async () => {
-                const response = await axios.get(`${backendURL}/assessment/rubrics/${id}`, {
+                const response = await axios.get(`${backendURL}rubrics/getRubrics/${id}`, {
                     headers: {
                         "Content-Type": "application/json"
                     },
@@ -76,6 +101,8 @@ function Rubrics({ subject }) {
             console.log(error)
         }
     }, [handleSubmit, deleteHandler]);
+
+    
 
     return (
         <>
@@ -114,9 +141,10 @@ function Rubrics({ subject }) {
                                     {(rubricList && rubricList.length > 0) ? (<>
                                         {rubricList.map((element, index) => (
                                             <tr>
-                                                <td>{element}</td>
-                                                <td>Dummy date</td>
-                                                <td><button className='btn btn-danger' onClick={()=>deleteHandler(element)}>Delete</button></td>
+                                                <td>{element.rubric}</td>
+                                                <td>{element.createdAt}</td>
+                                                <td><button className='btn btn-danger' onClick={() => deleteHandler(element._id)}>Delete</button>
+                                                <button className='btn btn-warining' onClick={updateHandler(element._id, e, element)}>update</button></td>
                                             </tr>
                                         ))}
                                     </>) : (<></>)}

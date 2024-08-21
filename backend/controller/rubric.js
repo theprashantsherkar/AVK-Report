@@ -1,20 +1,29 @@
+import { Assessment } from "../model/assessmentModel.js";
 import { Rubric } from "../model/rubric.js";
 
 
 export const addRubrics = async (req, res) => {
-    const { rubric } = req.body;
     const { id } = req.params;
+    const { rubric } = req.body;
+
+    console.log(id, rubric);
+    const assessment = await Assessment.findById(id);
+
     const newRubric = await Rubric.create({
         rubric: rubric,
         parentAssessment: id
     });
 
+
     if (!newRubric) {
         return res.status(500).json({
             success: false,
-            message:"rubric not created"
+            message: "rubric not created"
         })
     }
+
+    assessment.rubrics?.push(newRubric._id);
+
     res.status(200).json({
         success: true,
         message: "rubrics created successfully",
@@ -26,25 +35,33 @@ export const addRubrics = async (req, res) => {
 export const editRubric = async (req, res) => {
     const { id } = req.params;
     const { newRubric } = req.body;
+    console.log(id, newRubric);
     let rubrics = await Rubric.findById(id);
 
-    newRubric ? rubrics.rubric = newRubric : rubrics.rubric;
-
-    res.status(200).json({
-        success: true,
-        message:"rubrics updated successfully"
-    
-    })
-
+    if (!newRubric) {
+        return res.status(200).json({
+            success: true,
+            message: "nothing to update"
+        })
+    }
+    else {
+        rubrics.rubric = newRubric;
+        await rubrics.save();
+        return res.status(200).json({
+            success: true,
+            message: "rubric updated successfully",
+            newRubric
+        })
+    }
 }
 
-export const getSpecificRubrics = async(req, res) => {
+export const getSpecificRubrics = async (req, res) => {
     const { id } = req.params;
-    const rubrics = await Rubric.find({ parentAssessment: id });
+    const rubrics = await Rubric.find({ parentAssessment: id }).populate("parentAssessment");
     if (!rubrics) {
         return res.status(404).json({
             success: false,
-            message:"rubrics not added yet."
+            message: "rubrics not added yet."
         })
     }
 
@@ -56,11 +73,11 @@ export const getSpecificRubrics = async(req, res) => {
 }
 
 export const getAllRubrics = async (req, res) => {
-    const allRubrics = await Rubric.find({})
+    const allRubrics = await Rubric.find({}).populate("parentAssessment")
     if (!allRubrics) {
         return res.status(404).json({
             success: false,
-            message:"no runrics found"
+            message: "no runrics found"
         })
     }
     return res.status(200).json({
@@ -79,13 +96,13 @@ export const deleteRubric = async (req, res) => {
     if (!isDeleted) {
         return res.status(500).json({
             success: false,
-            message:"rubrics not deleted"
+            message: "rubrics not deleted"
         })
     }
 
     res.status(200).json({
         success: true,
-        message:"rubrics deleted successfully"
+        message: "rubrics deleted successfully"
     })
 
 }
