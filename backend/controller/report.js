@@ -136,3 +136,79 @@ export const generateResult = async (req, res, next) => {
         console.log(error);
     }
 };
+
+
+export const getClasses = async (req, res) => {
+    try {
+        const { teacher } = req.body;
+
+        if (!teacher) {
+            return res.status(400).json({
+                success: false,
+                message: "Teacher name is required",
+            });
+        }
+
+        const exam = await Exam.find({ teacher });
+
+        const ids = exam.map(foo => foo._id);
+        const assessment = await Assessment.find({ parentExam: ids }).populate("parentExam");
+
+        if (!exam || exam.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "No exam found for the given teacher",
+            });
+        }
+
+        const classDetailsSet = new Set(
+            assessment.map(element => `${element.Class} - ${element.parentExam.section}`)
+        );
+
+        const classDetails = Array.from(classDetailsSet);
+
+        if (!classDetails.length) {
+            return res.status(500).json({
+                success: false,
+                message: "No classes found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Classes found",
+            classes: classDetails,
+            assessment
+        });
+    } catch (error) {
+        console.error('Error fetching classes:', error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+};
+
+
+
+export const showStudents = async (req, res) => {
+    const { combined } = req.body;
+    const temp = combined.split(" - ");
+    const Class = temp[0];
+    const section = temp[1];
+
+    const students = await Student.find({ Class: Class, section: section });
+
+    if (!students || students.length == 0) {
+        return res.json({
+            success: false,
+            message: "no student exists of this class"
+        })
+    }
+
+    res.status(200).json({
+        success: true,
+        message: "Students fetched",
+        students,
+    })
+}

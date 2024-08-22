@@ -35,7 +35,7 @@ export const addRubrics = async (req, res) => {
 export const editRubric = async (req, res) => {
     const { id } = req.params;
     const { newRubric } = req.body;
-    console.log(id, newRubric);
+
     let rubrics = await Rubric.findById(id);
 
     if (!newRubric) {

@@ -9,6 +9,7 @@ import cors from 'cors';
 import examRouters from './routes/exam.js'
 import teacherRoutes from './routes/teacher.js'
 import SubjectRouter from './routes/subject.js';
+import reportRoute from './routes/report.js'
 import RubricRouter from './routes/rubric.js'
 
 
@@ -26,6 +27,7 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/users', userRoute);
+app.use('/report', reportRoute);
 app.use('/subject', SubjectRouter);
 app.use('/exam', examRouters);
 app.use('/assessment', assessmentRouter);

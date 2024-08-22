@@ -160,6 +160,10 @@ export const showStudents = async (req, res) => {
     const Class = temp[0];
     const section = temp[1];
     const title = temp[2];
+
+    const assessmentDetails = await Assessment.find({ title: title, subject: subject, Class: Class }).populate("parentExam");
+    
+
     const student = await Student.find({ Class: Class, section: section });
 
     if (!student || student.length == 0) {
@@ -173,5 +177,6 @@ export const showStudents = async (req, res) => {
         success: true,
         message: "Students fetched",
         student,
+        details: assessmentDetails
     })
 }

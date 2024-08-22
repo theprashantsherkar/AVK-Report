@@ -23,17 +23,13 @@ function Dashboard() {
     const [loadRubrics, setLoadRubrics] = useState([]);
     const [ass, setAss] = useState([]);
     const [marks, setMarks] = useState({});
+    const [details, setDetails] = useState({});
     const [grades, setGrades] = useState({});
     const [remarks, setRemarks] = useState({});
     const [Class, section, title] = selectedClass.split(' - ');
 
     useEffect(() => {
         const fetchClasses = async () => {
-            try {
-                // if (!user || !user.name) {
-                //     toast.error('User not found or not logged in');
-                //     return;
-                // }
 
                 const response = await axios.post(`${backendURL}/teacher/classes/`, {
                     teacher: user.name,
@@ -48,9 +44,6 @@ function Dashboard() {
                     setClassList(response.data.classes);
                     setAss(response.data.assessment);
                 }
-            } catch (error) {
-                console.error('Error fetching classes:', error);
-            }
         };
 
         fetchClasses();
@@ -72,21 +65,23 @@ function Dashboard() {
                 return toast.error("No students Found");
             }
 
-            setTimeout(() => toast.success(response.data.message), 1000);
+            toast.success(response.data.message);
             setStudentList(response.data.student);
+            const details = response.data.details[0];
+            setDetails(details);
 
-            const { data } = await axios.get(`${backendURL}assessment/rubrics/${assDetails._id}`, {
+            const { data } = await axios.get(`${backendURL}/rubrics/getRubrics/${details._id}`, {
                 headers: {
                     "Content-Type": "application/json",
                 },
                 withCredentials: true,
             });
-
             setTitles(data.rubrics);
         } catch (error) {
             console.log(error);
         }
     };
+
 
     useEffect(() => {
         const fetchSubjects = async () => {
@@ -100,15 +95,19 @@ function Dashboard() {
                     withCredentials: true,
                 });
                 setSubjectList(response.data.names);
+
             } catch (error) {
                 console.log(error);
             }
-        };
+        }
+
         fetchSubjects();
+
     }, [selectedClass]);
 
     const handleClassChange = (event) => {
         setSelectedClass(event.target.value);
+        console.log(selectedClass);
     };
 
     const handleMarksChange = (studentId, value) => {
@@ -135,9 +134,7 @@ function Dashboard() {
         }));
     };
 
-    const assDetails = ass.find(exam => exam.Class === Class && exam.section === section && exam.title === title) || {};
 
-    console.log(assDetails);
 
     return (
         <>
@@ -215,9 +212,8 @@ function Dashboard() {
                                         <th>Roll</th>
                                         <th>Name</th>
                                         <th>Class Section</th>
-                                        {assDetails.type === "Numeric" && <th>Max Marks</th>}
-                                        {assDetails.type === "Numeric" ? <th>Marks</th> : <th>Rubrics</th>}
-                                        {assDetails.type === "Numeric" ? <th>Remarks</th> : <th>Grade</th>}
+                                        {details.type == "Numeric" ? <th>Max Marks</th> : (details.isRubrics == "Yes" ? <th>Rubrics</th>:<></>)}
+                                        {details.type == "Numeric" ? <th>Marks</th> : <th>Grades</th>}
                                         <th>Remarks</th>
                                     </tr>
                                 </thead>
@@ -228,44 +224,41 @@ function Dashboard() {
                                                 <td>{student.rollNo}</td>
                                                 <td>{student.name}</td>
                                                 <td>{student.Class}</td>
-                                                {assDetails.type === "Numeric" ? (
+                                                {details.type === "Numeric" ? (
                                                     <>
-                                                        <td>{assDetails.maxMarks}</td>
+                                                        <td>{details.maxMarks}</td>
                                                         <td>
-                                                            <TextField
-                                                                type='number'
-                                                                value={marks[student._id] || ''}
-                                                                onChange={(e) => handleMarksChange(student._id, e.target.value)}
-                                                            />
+                                                            <input className='border border-black px-1' type="number" name="" value={marks[student._id] || ''}
+                                                                onChange={(e) => handleMarksChange(student._id, e.target.value)} id="" />
                                                         </td>
                                                     </>
                                                 ) : (
-                                                    <>
-                                                        <td>
-                                                            {titles.map((element, idx) => (
-                                                                <div className='py-2' key={idx}>{element}</div>
-                                                            ))}
-                                                        </td>
-                                                        <td>
-                                                            {titles.map((element, idx) => (
-                                                                <div className='py-1' key={idx}>
-                                                                    <select
-                                                                        className='border border-black p-2'
-                                                                        value={grades[student._id]?.[idx] || ''}
-                                                                        onChange={(e) => handleGradeChange(student._id, idx, e.target.value)}
-                                                                    >
-                                                                        <option value="O">O</option>
-                                                                        <option value="A">A</option>
-                                                                        <option value="B">B</option>
-                                                                        <option value="C">C</option>
-                                                                        <option value="D">D</option>
-                                                                        <option value="E">E</option>
-                                                                        <option value="F">F</option>
-                                                                    </select>
-                                                                </div>
-                                                            ))}
-                                                        </td>
-                                                    </>
+                                                        details.isRubrics == "Yes" ? <>
+                                                            <td>
+                                                                {titles.length > 0 ? titles.map((element, idx) => (
+                                                                    <div className='py-2' key={idx}>{element.rubric}</div>
+                                                                )) : <div className='py-2'>No Rubrics Added</div>}
+                                                            </td>
+                                                            <td>
+                                                                {titles.map((element, idx) => (
+                                                                    <div className='py-1' key={idx}>
+                                                                        <select
+                                                                            className='border border-black p-2'
+                                                                            value={grades[student._id]?.[idx] || ''}
+                                                                            onChange={(e) => handleGradeChange(student._id, idx, e.target.value)}
+                                                                        >
+                                                                            <option value="O">O</option>
+                                                                            <option value="A">A</option>
+                                                                            <option value="B">B</option>
+                                                                            <option value="C">C</option>
+                                                                            <option value="D">D</option>
+                                                                            <option value="E">E</option>
+                                                                            <option value="F">F</option>
+                                                                        </select>
+                                                                    </div>
+                                                                ))}
+                                                            </td>
+                                                        </> : <></>
                                                 )}
                                                 <td><div className=' '><input className="px-1 border border-black  rounded-sm" type="text" name="" id="" /></div></td>
                                             </tr>

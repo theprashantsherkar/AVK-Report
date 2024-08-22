@@ -175,5 +175,23 @@ export const sendSubs = async (req, res, next) => {
 }
 
 
+export const getRubrics = async (req, res) => {
+const { Combined, subject } = req.body;
+const temp = Combined?.split(" - ");
+const Class = temp[0];
+const section = temp[1];
+const title = temp[2];
 
-
+    const assessment = await Assessment.findOne({Class:Class, title:title, subject:subject });
+    if (!assessment) {
+        return res.status(404).json({
+            success: false,
+            message: "no assessment found"
+        })
+    }
+    res.status(200).json({
+        success: true,
+        message: "rubrics sent",
+        assessment,
+    })
+}

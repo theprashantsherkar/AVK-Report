@@ -18,12 +18,10 @@ function Rubrics({ subject }) {
     const [rubrics, setRubrics] = useState('');
     const [rubricList, setRubricList] = useState([]);
 
-    const deleteHandler = async (element) => {
+    const deleteHandler = async (id) => {
         try {
-            const response = await axios.delete(`${backendURL}/assessment/${id}/deleteRubric`, {
-                data: {
-                    rubric:element,
-                },
+            const response = await axios.delete(`${backendURL}/rubrics/${id}`, {
+
                 headers: {
                     "Content-Type":"application/json"
                 },
@@ -65,8 +63,8 @@ function Rubrics({ subject }) {
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.put(`${backendURL}/assessment/rubrics/${id}`, {
-                rubrics
+            const response = await axios.post(`${backendURL}/rubrics/add/${id}`, {
+                rubric:rubrics
             },
                 {
                     headers: {
@@ -87,22 +85,26 @@ function Rubrics({ subject }) {
 
     useEffect(() => {
         try {
-            const loadRubrics = async () => {
-                const response = await axios.get(`${backendURL}rubrics/getRubrics/${id}`, {
+            const loaded = async () => {
+                const response = await axios.get(`${backendURL}/rubrics/getRubrics/${id}`, {
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type":"application/json"
                     },
                     withCredentials: true,
                 })
+
                 setRubricList(response.data.rubrics);
+
             }
-            loadRubrics();
+            loaded();
         } catch (error) {
             console.log(error)
         }
+
+
     }, [handleSubmit, deleteHandler]);
 
-    
+
 
     return (
         <>
@@ -143,8 +145,8 @@ function Rubrics({ subject }) {
                                             <tr>
                                                 <td>{element.rubric}</td>
                                                 <td>{element.createdAt}</td>
-                                                <td><button className='btn btn-danger' onClick={() => deleteHandler(element._id)}>Delete</button>
-                                                <button className='btn btn-warining' onClick={updateHandler(element._id, e, element)}>update</button></td>
+                                                <td><button className='btn btn-danger' onClick={() => deleteHandler(element._id)}>Delete</button>{"     "}
+                                                <button className='btn btn-warning' >update</button></td>
                                             </tr>
                                         ))}
                                     </>) : (<></>)}
