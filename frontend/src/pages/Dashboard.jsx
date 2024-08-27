@@ -20,9 +20,8 @@ function Dashboard() {
     const [subject, setSubject] = useState('');
     const { user } = useContext(LoginContext);
     const [titles, setTitles] = useState([]);
-    const [loadRubrics, setLoadRubrics] = useState([]);
     const [ass, setAss] = useState([]);
-    const [marks, setMarks] = useState({});
+    const [marksData, setMarksData] = useState([]);
     const [details, setDetails] = useState({});
     const [grades, setGrades] = useState({});
     const [remarks, setRemarks] = useState({});
@@ -43,6 +42,7 @@ function Dashboard() {
                 if (response.data.success) {
                     setClassList(response.data.classes);
                     setAss(response.data.assessment);
+
                 }
         };
 
@@ -82,7 +82,26 @@ function Dashboard() {
         }
     };
 
+    const handleUploadMarks = async () => {
+        console.log(details);
+        try {
+            const response = await axios.post(`/api/marks?examId=${details.parentExam._id}&assessmentId=${details._id}`, {
+                details: marksData
+            });
 
+            if (response.data.success) {
+                toast.success(response.data.message);
+                console.log(response.data.message);
+                
+
+                // Handle the success case, e.g., show a message or reset the form
+            } else {
+                console.log(response.data.message);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
     useEffect(() => {
         const fetchSubjects = async () => {
             try {
@@ -110,11 +129,10 @@ function Dashboard() {
         console.log(selectedClass);
     };
 
-    const handleMarksChange = (studentId, value) => {
-        setMarks(prevMarks => ({
-            ...prevMarks,
-            [studentId]: value,
-        }));
+    const handleMarksChange = (index, field, value) => {
+        const newMarksData = [...marksData];
+        newMarksData[index][field] = value;
+        setMarksData(newMarksData);
     };
 
     const handleGradeChange = (studentId, rubricIndex, value) => {
@@ -202,7 +220,7 @@ function Dashboard() {
                         <div className='flex items-center justify-between text-xl font-semibold'>
                             <div>Assessment Title: {title} </div>
                             <div>Subject Name: {subject} </div>
-                            <button className='btn btn-danger'>Update All</button>
+                            <button className='btn btn-danger' disabled onClick={handleUploadMarks}>Update All</button>
                         </div>
                         <hr />
                         <div className='w-full'>
@@ -215,6 +233,7 @@ function Dashboard() {
                                         {details.type == "Numeric" ? <th>Max Marks</th> : (details.isRubrics == "Yes" ? <th>Rubrics</th>:<></>)}
                                         {details.type == "Numeric" ? <th>Marks</th> : <th>Grades</th>}
                                         <th>Remarks</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -223,13 +242,13 @@ function Dashboard() {
                                             <tr key={index}>
                                                 <td>{student.rollNo}</td>
                                                 <td>{student.name}</td>
-                                                <td>{student.Class}</td>
+                                                <td>{`${student.Class} - ${student.section}`}</td>
                                                 {details.type === "Numeric" ? (
                                                     <>
                                                         <td>{details.maxMarks}</td>
                                                         <td>
-                                                            <input className='border border-black px-1' type="number" name="" value={marks[student._id] || ''}
-                                                                onChange={(e) => handleMarksChange(student._id, e.target.value)} id="" />
+                                                            <input className='border border-black px-1' type="number" name="" 
+                                                                onChange={(e) => handleMarksChange(index, 'student', e.target.value)} id="" />
                                                         </td>
                                                     </>
                                                 ) : (
@@ -247,20 +266,43 @@ function Dashboard() {
                                                                             value={grades[student._id]?.[idx] || ''}
                                                                             onChange={(e) => handleGradeChange(student._id, idx, e.target.value)}
                                                                         >
-                                                                            <option value="O">O</option>
+                                                                            <option value="" disabled>Select</option>
                                                                             <option value="A">A</option>
                                                                             <option value="B">B</option>
                                                                             <option value="C">C</option>
                                                                             <option value="D">D</option>
                                                                             <option value="E">E</option>
-                                                                            <option value="F">F</option>
+                                                                            <option value="AB">AB</option>
+                                                                            <option value="NO">NO</option>
+                                                                            <option value="ML">ML</option>
                                                                         </select>
                                                                     </div>
                                                                 ))}
                                                             </td>
-                                                        </> : <></>
+                                                        </> : <><div className='py-2'>
+                                                                <input
+                                                                    className="px-1 border border-black rounded-sm"
+                                                                    type="text"
+                                                                    // value={remarks[student._id] || ''}
+                                                                    onChange={(e) => handleMarksChange(index, 'remarks', e.target.value)}
+                                                                />
+                                                            </div></>
                                                 )}
-                                                <td><div className=' '><input className="px-1 border border-black  rounded-sm" type="text" name="" id="" /></div></td>
+                                                <td>
+                                                    <div className=' '>
+                                                        <input
+                                                            className="px-1 border border-black rounded-sm"
+                                                            type="text"
+                                                            value={remarks[student._id] || ''}
+                                                            onChange={(e) => handleRemarksChange(student._id, e.target.value)}
+                                                        />
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div>
+                                                        <button className='btn btn-primary'>Update</button>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         ))
                                     ) : (

@@ -11,7 +11,7 @@ const resultSchema = new mongoose.Schema({
     },
     exam: {
         type: mongoose.Types.ObjectId,
-        ref: "exam datas",
+        ref: "Exams",
     },
     assessment: {
         type: mongoose.Types.ObjectId,

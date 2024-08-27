@@ -61,7 +61,7 @@ function Login() {
                         </div>
                         <div className='flex flex-col justify-center items-center gap-4 my-7'>
                             <TextField id="outlined-basic" label="Email Address" variant="outlined" fullWidth type={'email'} value={email} onChange={(e) => setEmail(e.target.value)} />
-                            <FormControl variant="outlined" fullWidth>
+                            <FormControl variant="outlined" fullWidth >
                                 <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                                 <OutlinedInput
                                     id="outlined-adornment-password"
@@ -83,7 +83,7 @@ function Login() {
                                     label="Password"
                                 />
                             </FormControl>
-                            <button className='btn btn-primary' type='submit' onClick={handleLogin}>Login</button>
+                            <button className='btn btn-primary' type='submit'  onClick={handleLogin} >Login</button>
                         </div>
                     </div>
                 </div>

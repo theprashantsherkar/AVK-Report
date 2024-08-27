@@ -88,14 +88,16 @@ export const specificAss = async (req, res) => {
 
 
 export const deleteAss = async (req, res, next) => {
-    const assessment = await Assessment.findById({ _id: req.params.id })
+    const assId = req.params.id;
+    const assessment = await Assessment.findById(assId);
     if (!assessment) {
         return res.status(404).json({
             success: false,
             message: "no assessment found"
         })
     }
-    const isDeleted = await assessment.deleteOne();
+    await assessment.deleteOne();
+    const isDeleted = await assessment.save();
     if (!isDeleted) {
         return res.status(500).json({
             success: false,

@@ -1,58 +1,129 @@
+
 import { Result } from "../model/result.js";
 import { Student } from "../model/studentModel.js";
-import { Exam } from "../model/examModel.js";
-import { Assessment } from "../model/assessmentModel.js"
+import { Exam } from '../model/examModel.js'
+import { Assessment } from '../model/assessmentModel.js';
+
+export const sendRemarks = async (req, res) => {
+    try {
+        const { studentId, examId, assessmentId } = req.query;
+        const { remarks } = req.body;
+
+        if (!remarks) {
+            return res.status(400).json({
+                success: false,
+                message: "Remarks are required"
+            });
+        }
+
+        const result = await Result.findOne({
+            student: studentId,
+            exam: examId,
+            assessment: assessmentId
+        });
+
+        if (!result) {
+            return res.status(404).json({
+                success: false,
+                message: "Result not found for the given student, exam, and assessment"
+            });
+        }
+
+        result.remarks = remarks;
+        await result.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Remarks added successfully",
+            result
+        });
+    } catch (error) {
+        console.error('Error adding remarks:', error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+    }
+}
+
+
 
 export const sendMarks = async (req, res) => {
-    const { studentId, examId, assessmentId } = req.query;
-    const { marks, remarks } = req.body;
+    try {
+        const { examId, assessmentId } = req.query;
+        const details = req.body.details;
 
-    const student = await Student.findById(studentId);
-    const exam = await Exam.findById(examId);
-    const assessment = await Assessment.findById(assessmentId);
 
-    if (!marks || !remarks) {
-        return res.status(400).json({
-            success: false,
-            message: "Enter Marks and Remarks first"
-        })
-    }
-    if (student.Class !== exam.Class) {
-        return res.status(500).json({
-            success: false,
-            message: "Student is in different class and exam is of different Class"
-        })
-    }
-
-    const resultAdded = await Result.create({
-        student: student._id,
-        exam: exam._id,
-        assessment: assessment._id,
-        Class: student.Class,
-        marks: marks,
-        remarks: remarks,
-        credentials: {
-            name: student.name,
-            Class: student.Class,
-            roll: student.rollNum,
-            assessment: assessment.title,
-            subject: assessment.subject,
+        if (!details || details.length == 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Enter Marks and Remarks first"
+            });
         }
-    })
-    if (!resultAdded) {
-        return res.status(500).json({
+
+        const exam = await Exam.findById(examId);
+        const assessment = await Assessment.findById(assessmentId);
+
+        console.log(Array.isArray(details));
+
+        if (!Array.isArray(details)) {
+            return res.status(400).json({
+                success: false,
+                message: "Details is not an array"
+            });
+        }
+
+
+        const promises = details.map(async (element) => {
+            const studentId = element.studentId;
+            const student = await Student.findById(studentId);
+            let result = await Result.findOne({ student: studentId, exam: examId, assessment: assessmentId });
+
+            if (result) {
+                result.marks = element.marks;
+                result.remarks = element.remarks;
+            } else {
+                result = new Result({
+                    student: studentId,
+                    exam: examId,
+                    assessment: assessmentId,
+                    Class: student?.Class,
+                    marks: element.marks,
+                    remarks: element.remarks,
+                    credentials: {
+                        name: student.name,
+                        Class: student?.Class,
+                        roll: student.rollNum,
+                        assessment: assessment.title,
+                        subject: assessment.subject,
+                    }
+                });
+            }
+
+            await result.save();
+            return result;
+        });
+
+        // Wait for all promises to resolve
+        const results = await Promise.all(promises);
+
+
+        res.status(200).json({
+            success: true,
+            message: "Marks updated successfully.",
+            result: results,
+        });
+
+
+    } catch (error) {
+        console.error('Error updating marks:', error);
+        res.status(500).json({
             success: false,
-            message: "Something went wrong, Please try later."
-        })
+            message: "Internal server error"
+        });
     }
-    res.status(200).json({
-        success: true,
-        message: "Marks Added Successfully.",
-        result: resultAdded,
+};
 
-    })
-
-}
 
 export const sendGrades = async (req, res) => {
     const { studentId, examId, assessmentId } = req.query;

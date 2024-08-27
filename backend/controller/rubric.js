@@ -13,16 +13,18 @@ export const addRubrics = async (req, res) => {
         rubric: rubric,
         parentAssessment: id
     });
-
-
+    
+    
     if (!newRubric) {
         return res.status(500).json({
             success: false,
             message: "rubric not created"
         })
     }
-
+    
     assessment.rubrics?.push(newRubric._id);
+    await assessment.save();
+    await newRubric.save();
 
     res.status(200).json({
         success: true,
