@@ -283,3 +283,166 @@ export const showStudents = async (req, res) => {
         students,
     })
 }
+
+
+export const sendEachMarks = async (req, res) => {
+    const { studentId, examId, assessmentId } = req.query;
+    const { marks, remarks } = req.body;
+
+    console.log(marks, remarks);
+
+    const student = await Student.findById(studentId);
+    const exam = await Exam.findById(examId);
+    const assessment = await Assessment.findById(assessmentId);
+
+    if (!marks || !remarks) {
+        return res.status(400).json({
+            success: false,
+            message: "Enter Marks and Remarks first"
+        })
+    }
+
+
+    const resultAdded = await Result.create({
+        student: student._id,
+        exam: exam._id,
+        assessment: assessment._id,
+        Class: student.Class,
+        marks: marks,
+        remarks: remarks,
+        credentials: {
+            name: student.name,
+            Class: student.Class,
+            roll: student.rollNum,
+            assessment: assessment.title,
+            subject: assessment.subject,
+        }
+    })
+    if (!resultAdded) {
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong, Please try later."
+        })
+    }
+    res.status(200).json({
+        success: true,
+        message: "Marks Added Successfully.",
+        result: resultAdded,
+
+    })
+
+}
+
+
+export const sendEachGrades = async (req, res) => {
+    const { studentId, examId, assessmentId } = req.query;
+    const { grade, remarks } = req.body;
+
+    if (!grade) {
+        return res.status(400).json({
+            success: false,
+            message: "Enter Grades first"
+        })
+    }
+
+    const student = await Student.findById(studentId);
+    const exam = await Exam.findById(examId);
+    const assessment = await Assessment.findById(assessmentId);
+
+    const grades = assessment.rubrics.reduce((acc, curr, index) => {
+        acc[curr] = grade[index];
+        return acc;
+    }, {});
+
+    const resultAdded = await Result.create({
+        student: student._id,
+        exam: exam._id,
+        assessment: assessment._id,
+        credentials: {
+            name: student.name,
+            Class: student.Class,
+            roll: student.rollNum,
+            assessment: assessment.title,
+            subject: assessment.subject,
+        },
+        Class: student.Class,
+        grade: grades,
+        remarks: remarks,
+    })
+    if (!resultAdded) {
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong, Please try later."
+        })
+    }
+    res.status(200).json({
+        success: true,
+        message: "Grades Added Successfully.",
+        result: resultAdded,
+
+    })
+
+}
+
+export const getEachResult = async (req, res, next) => {
+    try {
+        const studentIds = req.body.id;
+        if (!Array.isArray(studentIds)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid input, expected an array of IDs"
+            });
+        }
+
+        const resultPromises = studentIds.map((element) => Result.find({ student: element }).populate("exam"));
+        const results = await Promise.all(resultPromises);
+        if (!results) {
+            return res.status(404).json({
+                success: false,
+                message: "Marks/Grades not added!",
+            })
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Here are the results",
+            results,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error!"
+        });
+        console.log(error);
+    }
+};
+
+
+export const sendJustGrade = async (req, res) => {
+    const { studentId, examId, assessmentId } = req.query;
+    const { grade, remarks } = req.body;
+
+    const student = await Student.findById(studentId);
+    const exam = await Exam.findById(examId);
+    const assessment = await Assessment.findById(assessmentId);
+    
+    const resultAdded = await Result.create({
+        student: student._id,
+        exam: exam._id,
+        assessment: assessment._id,
+        Class: student.Class,
+        grade: grade,
+        remarks: remarks,
+    })
+    if (!resultAdded) {
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong, Please try later."
+        })
+    }
+    res.status(200).json({
+        success: true,
+        message: "Grades Added Successfully.",
+        result: resultAdded,
+    })
+}

@@ -9,6 +9,8 @@ import Select from '@mui/material/Select';
 import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 import { backendURL } from '../App';
 import toast from 'react-hot-toast';
 import Header from '../components/Header';
@@ -46,12 +48,8 @@ function Reports() {
             if (response.data.success) {
                 setClassList(response.data.classes);
                 setAss(response.data.assessment);
-
             }
-
         };
-
-
         fetchClasses();
     }, [user]);
 
@@ -89,11 +87,10 @@ function Reports() {
     const downloadHandler = async () => {
         try {
             const id = getSelectedStudentIds();
-            console.log(id);
             if (id.length == 0) {
                 return toast.error("Select Student First.")
             }
-            const { data } = await axios.post(`${backendURL}/result/report`, { id }, {
+            const { data } = await axios.post(`${backendURL}/report/getEachResult`, { id }, {
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -103,7 +100,8 @@ function Reports() {
             toast.success(data.message);
             console.log(data.results);
             setStudentResult(data.results);
-            setNavigateReady(true);  // Set navigateReady to true after updating studentResult
+            setNavigateReady(true);
+
         } catch (error) {
             console.error("Error fetching report:", error);
             toast.error("Failed to download report.");
@@ -133,14 +131,13 @@ function Reports() {
         }
     };
 
-    // useEffect(() => {
-    //     if (navigateReady) {
-    //         console.log(studentResult);
-    //         navigate(`/report/`, { state: { results: studentResult } });
-    //         setNavigateReady(false);  // Reset navigateReady to false
-    //     }
-    // }, [navigateReady, studentResult, navigate]);
-
+    useEffect(() => {
+        if (navigateReady) {
+            console.log(studentResult);
+            navigate(`/Dummy`, { state: { results: studentResult } });
+            setNavigateReady(false);
+        }
+    }, [navigateReady, studentResult, navigate]);
 
 
     return (
@@ -184,7 +181,7 @@ function Reports() {
                         </div>
                         <hr />
                         <div className='flex items-center justify-between text-xl font-semibold'>
-                            <div>Assessment Title:{ }</div>
+                            <div>Class:{"   "}{selectedClass ? selectedClass : "Select Class"}</div>
                             <button className='btn btn-warning' onClick={downloadHandler}>Download Report</button>
                         </div>
                         <hr />

@@ -1,37 +1,12 @@
 import React, { useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, Container } from '@mui/system';
 import { Grid, Table, TableRow, TableContainer, TableHead, Typography } from '@mui/material';
 import toast from 'react-hot-toast';
 import logo from '../assets/logo.jpg'
 
-function Result() {
-        // const location = useLocation();
-    // const studentData = location.state?.\\
-    
-    const result = [
-        {
-            subject: "Maths",
-            grade: "A",
-            remarks: "Excellent"
-        }, {
-            subject: "Science",
-            grade: "B",
-            remarks: "Very Good"
-        }, {
-            subject: "Social Science",
-            grade: "C",
-            remarks: "Good"
-        }, {
-            subject: "Hindi",
-            grade: "D",
-            remarks: "Scope for Improvement"
-        }, {
-            subject: "English",
-            grade: "A",
-            remarks: "Excellent"
-        }
-    ]
-
+function Result({ result }) {
+    const location = useLocation();
 
     const styles = {
         header: {
@@ -72,13 +47,12 @@ function Result() {
         <>
             <div className='d-flex justify-content-center align-items-center min-h-screen px-2 py-3 flex-column  w-full'>
                 <div className='border border-black w-75 h-full py-4 px-2 d-flex my-3 flex-column align-items-center'>
-
                     <h1 className='fs-3 py-2 fw-semibold'>Acharya Vidya Kula</h1>
                     <div className=' fw-medium fs-6'>Affiliated to ICSE KA 063</div>
                     <div className=' fw-medium fs-6'>Aloka Road, Left Fork off</div>
                     <div className='fw-medium fs-6'>Mysore-Madikeri Highway at 12th KM Stone</div>
                     <div className='my-3'>
-                        <img className='w-64 h-36 logo' src={logo} alt="logo" /></div>
+                        <img className='w-52 h-38  logo' src={logo} alt="logo" /></div>
                     <div className='fw-medium fs-4 fst-italic'>Report Card 2024-25</div>
                     <div className='py-5'>
                         <Container>
@@ -87,7 +61,7 @@ function Result() {
                                     <Typography variant="body1"><strong>Student Name:</strong></Typography>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Typography variant="body1"><strong>{"Prashant Sherkar"}</strong></Typography>
+                                    <Typography variant="body1"><strong>{result[0]?.credentials.name || "Prashant Sherkar"}</strong></Typography>
                                     <Box borderBottom={1} mt={1}></Box>
                                 </Grid>
 
@@ -95,7 +69,7 @@ function Result() {
                                     <Typography variant="body1"><strong>Class :</strong></Typography>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Typography variant="body1"><strong>{ "Class X"}</strong></Typography>
+                                    <Typography variant="body1"><strong>{result[0]?.credentials.Class || "Class X"}</strong></Typography>
                                     <Box borderBottom={1} mt={1}></Box>
                                 </Grid>
 
@@ -103,7 +77,7 @@ function Result() {
                                     <Typography variant="body1"><strong>Roll Number:</strong></Typography>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Typography variant="body1"><strong>{ 23} </strong></Typography>
+                                    <Typography variant="body1"><strong>{result[0]?.credentials.roll || 23} </strong></Typography>
                                     <Box borderBottom={1} mt={1}></Box>
                                 </Grid>
 
@@ -111,7 +85,7 @@ function Result() {
                                     <Typography variant="body1"><strong>Class Teacher :</strong></Typography>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Typography variant="body1"><strong>{"Vivek Sir"}</strong></Typography>
+                                    <Typography variant="body1"><strong>{result[0]?.exam.teacher || "Vivek Sir"}</strong></Typography>
                                     <Box borderBottom={1} mt={1}></Box>
                                 </Grid>
                             </Grid>
@@ -129,11 +103,11 @@ function Result() {
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr>
-                                <th colSpan="3" style={styles.header}>Student Name: {"Prashant Sherkar"}</th>
+                                <th colSpan="3" style={styles.header}>Student Name: {result[0]?.credentials.name}</th>
                             </tr>
                             <tr>
-                                <th colSpan="2" style={styles.subHeader}>{"Class X"}</th>
-                                <th style={styles.subHeader}>{"Assessment 1"}</th>
+                                <th colSpan="2" style={styles.subHeader}>{result[0]?.credentials.Class}</th>
+                                <th style={styles.subHeader}>{result[0]?.credentials.assessment}</th>
                             </tr>
                             <tr>
                                 <th style={styles.subHeader}>Subjects and Skills</th>
@@ -144,9 +118,9 @@ function Result() {
                         <tbody>
                             {result.map((subject, index) => (
                                 <tr key={index}>
-                                    <td style={styles.cell}>{subject.subject}</td>
-                                    <td style={styles.cell}>{subject.grade}</td>
-                                    <td style={styles.cell}>{subject.remarks}</td>
+                                    <td style={styles.cell}>{subject.credentials.subject}</td>
+                                    <td style={styles.cell}>{subject.marks || "grades to be added yet"}</td>
+                                    <td style={styles.cell}>{subject.remarks || "no remarks added"}</td>
                                 </tr>
                             ))}
                         </tbody>
