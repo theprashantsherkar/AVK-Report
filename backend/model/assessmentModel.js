@@ -20,6 +20,10 @@ const AssessmentSchema = new mongoose.Schema({
     isRubrics: {
         type: String,
     },
+    canDelete: {
+        type: Boolean,
+        default: true
+    },
     rubrics: {
         type: [mongoose.Types.ObjectId],
         ref:"Rubrics",

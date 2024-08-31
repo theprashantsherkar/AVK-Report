@@ -12,7 +12,11 @@ const rubricSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: new Date(Date.now())
-    }
+    },
+    canDelete: {
+        type: Boolean,
+        default: true
+    },
 })
 
 

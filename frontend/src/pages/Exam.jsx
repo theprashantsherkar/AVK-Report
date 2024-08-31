@@ -20,21 +20,27 @@ function Exam() {
     const [examData, setExamData] = useState([]);
     const [names, setNames] = useState([]);
     const [subjects, setSubjects] = useState([]);
+    const { canEdit } = useContext(LoginContext);
 
-    const [selectedExamId, setSelectedExamId] = useState(null); // Track the selected exam ID
+    const [selectedExamId, setSelectedExamId] = useState(null); 
 
     const deleteHandler = async (id) => {
-        const res = await axios.delete(`${backendURL}/exam/${id}`, {
-            headers: {
-                "Content-Type": "application/json"
-            },
-            withCredentials: true
-        });
-        if (!res.data.success) {
-            return toast.error('Something went wrong');
+        const exam = examData.find(exam => exam._id === id);
+        if(!(exam.canDelete)){
+            return toast.error('You are not authorized to delete this exam');
+        } else {
+            const res = await axios.delete(`${backendURL}/exam/${id}`, {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                withCredentials: true
+            });
+            if (!res.data.success) {
+                return toast.error('Something went wrong');
+            }
+            toast.success(res.data.message);
+            setExamData(examData.filter(exam => exam._id !== id));
         }
-        toast.success(res.data.message);
-        setExamData(examData.filter(exam => exam._id !== id)); // Update examData state after deletion
     };
 
     const submitHandler = async () => {

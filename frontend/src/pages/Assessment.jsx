@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Header from '../components/Header'
 import Sidebar from '../components/Sidebar'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -9,6 +9,7 @@ import { backendURL } from '../App';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
 import toast from 'react-hot-toast';
+import { LoginContext } from '../main';
 
 function Assessment() {
 
@@ -21,24 +22,29 @@ function Assessment() {
     const [subject, setSubject] = useState('');
     const [type, setType] = useState('');
     const [isRubrics, setIsRubrics] = useState(false);
-
+    const { canEdit } = useContext(LoginContext);
     const [assList, setAssList] = useState([]);
 
     const deleteHandler = async (id) => {
-        try {
-            const response = await axios.delete(`${backendURL}/assessment/${id}`, {
-                headers: {
-                    "Content-Type":"application/json",
-                },
-                withCredentials: true,
-            })
-            toast.success(response.data.message);
-        } catch (error) {
-            console.log(error);
+        const assessment = assList.find(assessment => assessment._id === id);
+        if (!(assessment.canDelete)) {
+            return toast.error("You are not authorized to delete this assessment!")
+        } else {
+            try {
+                const response = await axios.delete(`${backendURL}/assessment/${id}`, {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true,
+                })
+                toast.success(response.data.message);
+            } catch (error) {
+                console.log(error);
+            }
         }
     }
 
-    const handleSubmit = async() => {
+    const handleSubmit = async () => {
         try {
             if (!title || !term || !type || !subject) {
                 console.log("Every field is mandatory!")
@@ -257,8 +263,8 @@ function Assessment() {
                                                 <td>{element.isRubrics == "Yes" ? 'Yes' : 'No'}</td>
                                                 <td>{element.type == "Numeric" ? element.maxMarks : "-"}</td>
                                                 <td><button className=' bg-orange-500 rounded-md px-1 py-1' onClick={() => deleteHandler(element._id)}><DeleteForeverIcon sx={{ color: 'white' }} /></button> {"   "}
-                                                    <button className='btn btn-warning p-1 '><EditIcon sx={{ color: 'white' }} /></button>{"  "}<br/>
-                                                    {element.isRubrics == "Yes" ? (<Link to={`/rubrics/${element._id}`}><button className='btn btn-danger'>+ Rubrics</button></Link>):(<></>)}
+                                                    <button className='btn btn-warning p-1 '><EditIcon sx={{ color: 'white' }} /></button>{"  "}<br />
+                                                    {element.isRubrics == "Yes" ? (<Link to={`/rubrics/${element._id}`}><button className='btn btn-danger'>+ Rubrics</button></Link>) : (<></>)}
                                                 </td>
                                             </tr>
                                         ))}

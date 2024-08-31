@@ -5,7 +5,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { Box, TextField } from '@mui/material';
+import { Box } from '@mui/material';
 import Header from '../components/Header.jsx';
 import toast from 'react-hot-toast';
 import axios from 'axios';
@@ -18,19 +18,19 @@ function Dashboard() {
     const [studentList, setStudentList] = useState([]);
     const [selectedClass, setSelectedClass] = useState('');
     const [subject, setSubject] = useState('');
-    const { user } = useContext(LoginContext);
+    const { user, setCanEdit, canEdit } = useContext(LoginContext);
     const [titles, setTitles] = useState([]);
     const [ass, setAss] = useState([]);
-    
     const [details, setDetails] = useState({});
     const [marks, setMarks] = useState({});
     const [grades, setGrades] = useState({});
     const [remarks, setRemarks] = useState({});
     const [Class, section, title] = selectedClass.split(' - ');
+    const [existingResults, setExistingResults] = useState([]);
+
 
     useEffect(() => {
         const fetchClasses = async () => {
-
             const response = await axios.post(`${backendURL}/teacher/classes/`, {
                 teacher: user.name,
             }, {
@@ -43,7 +43,6 @@ function Dashboard() {
             if (response.data.success) {
                 setClassList(response.data.classes);
                 setAss(response.data.assessment);
-
             }
         };
 
@@ -67,10 +66,9 @@ function Dashboard() {
             }
 
             toast.success(response.data.message);
-            setStudentList(response.data.student);
+            setStudentList(response.data.students);
             const details = response.data.details[0];
             setDetails(details);
-
 
             const { data } = await axios.get(`${backendURL}/rubrics/getRubrics/${details._id}`, {
                 headers: {
@@ -79,92 +77,106 @@ function Dashboard() {
                 withCredentials: true,
             });
             setTitles(data.rubrics);
+
+            // existing kharab results
+            // const initialMarks = {};
+            // const initialGrades = {};
+            // const initialRemarks = {};
+            // response.data.students.forEach(student => {
+            //     initialMarks[student._id] = student.results[0]?.marks || '';
+            //     initialGrades[student._id] = student.results[0]?.grades || '';
+            //     initialRemarks[student._id] = student.results[0]?.remarks || '';
+            // });
+            // setMarks(initialMarks);
+            // setGrades(initialGrades);
+            // setRemarks(initialRemarks);
+
+            // new approach
+            setExistingResults(response.data.existingResults);
+
         } catch (error) {
             console.log(error);
         }
     };
 
+    const loadMarks = (e, id) => {
+        const newMarks = {};
+        const newRemarks = {};
+        if (!existingResults || existingResults.length == 0) {
+            setMarks(newMarks);
+            setRemarks(newRemarks);
+        }
+        else {
+            const result = existingResults.filter(result => result.student == id);
+            setMarks(result.marks);
+            setRemarks(result.remarks);
+        }
+
+    }
+
     const handleUpdate = async (id) => {
-        const studentId = id
-        const examId = details.parentExam._id
-        const assessmentId = details._id
-        if (details.type == "Numeric") {
-            try {
+        const studentId = id;
+        const examId = details.parentExam?._id;
+        const assessmentId = details._id;
+
+        try {
+            if (details.type === "Numeric") {
                 const { data } = await axios.post(`${backendURL}/report/sendEachMarks/?examId=${examId}&assessmentId=${assessmentId}&studentId=${studentId}`, {
                     marks: marks[studentId],
                     remarks: remarks[studentId],
-                },
-                    {
+                }, {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    withCredentials: true,
+                });
+                if (!data.success) {
+                    toast.error("Something went wrong");
+                }
+                toast.success(data.message);
+            } else if (details.type === "Graded") {
+                if (details.isRubrics === "Yes") {
+                    const { data } = await axios.post(`${backendURL}/report/sendEachGrades/?examId=${examId}&assessmentId=${assessmentId}&studentId=${studentId}`, {
+                        grade: grades[studentId],
+                        remarks: remarks[studentId],
+                    }, {
                         headers: {
                             "Content-Type": "application/json"
                         },
                         withCredentials: true,
-                    })
-                if (!data.success) {
-                    toast.error("something went wrong")
-                }
-                toast.success(data.message);
-            } catch (error) {
-                console.log(error);
-                toast.error("Something went wrong")
-            }
-
-        }
-        else if (details.type == "Graded") {
-            if(details.isRubrics == "Yes"){
-                try {
-                    const { data } = await axios.post(`${backendURL}/report/sendEachGrades/?examId=${examId}&assessmentId=${assessmentId}&studentId=${studentId}`, {
+                    });
+                    if (!data.success) {
+                        toast.error("Something went wrong");
+                    }
+                    toast.success(data.message);
+                } else {
+                    const { data } = await axios.post(`${backendURL}/report/sendJustGrade/?examId=${examId}&assessmentId=${assessmentId}&studentId=${studentId}`, {
                         grade: grades[studentId],
                         remarks: remarks[studentId],
-                    },
-                        {
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            withCredentials: true,
-                        })
+                    }, {
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        withCredentials: true,
+                    });
                     if (!data.success) {
-                        toast.error("something went wrong")
+                        toast.error("Something went wrong");
                     }
                     toast.success(data.message);
-
-                } catch (error) {
-                    console.log(error);
-                    toast.error("Something went wrong")
                 }
             }
-
-            else {
-                try {
-                    const { data } = await axios.post(`${backendURL}/report/sendJustGrade/?examId=${examId}&assessmentId=${assessmentId}&studentId=${studentId}`, {
-                        grade: grades,
-                        remarks: remarks[studentId],
-                    },
-                        {
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-
-                            withCredentials: true,
-                        })
-                    if (!data.success) {
-                        toast.error("something went wrong")
-                    }
-                    toast.success(data.message);
-
-                } catch (error) {
-                    console.log(error);
-                    toast.error("Something went wrong")
-                }
-            }
+            setCanEdit(false);
+        } catch (error) {
+            console.log(error);
+            toast.error("Something went wrong");
         }
-    }
+    };
 
     useEffect(() => {
         const fetchSubjects = async () => {
             try {
                 const response = await axios.post(`${backendURL}/teacher/subjects`, {
-                    Combined: ClassList,
+                    Combined: selectedClass,
                 }, {
                     headers: {
                         "Content-Type": "application/json"
@@ -178,13 +190,13 @@ function Dashboard() {
             }
         }
 
-        fetchSubjects();
-
+        if (selectedClass) {
+            fetchSubjects();
+        }
     }, [selectedClass]);
 
     const handleClassChange = (event) => {
         setSelectedClass(event.target.value);
-        console.log(selectedClass);
     };
 
     const handleMarksChange = (studentId, value) => {
@@ -198,13 +210,15 @@ function Dashboard() {
         setRemarks(prevState => ({ ...prevState, [studentId]: value }));
     };
 
-    const handleGradeChange = (studentId, value) => {
+    const handleGradeChange = (studentId, index, value) => {
         setGrades(prevState => ({
             ...prevState,
-            [studentId]: value
+            [studentId]: {
+                ...prevState[studentId],
+                [index]: value
+            }
         }));
     };
-
 
     return (
         <>
@@ -282,8 +296,8 @@ function Dashboard() {
                                         <th>Roll</th>
                                         <th>Name</th>
                                         <th>Class Section</th>
-                                        {details.type == "Numeric" ? <th>Max Marks</th> : (details.isRubrics == "Yes" ? <th>Rubrics</th> : <></>)}
-                                        {details.type == "Numeric" ? <th>Marks</th> : <th>Grades</th>}
+                                        {details.type === "Numeric" ? <th>Max Marks</th> : (details.isRubrics === "Yes" ? <th>Rubrics</th> : null)}
+                                        {details.type === "Numeric" ? <th>Marks</th> : <th>Grades</th>}
                                         <th>Remarks</th>
                                         <th>Actions</th>
                                     </tr>
@@ -299,12 +313,13 @@ function Dashboard() {
                                                     <>
                                                         <td>{details.maxMarks}</td>
                                                         <td>
-                                                            <input className='border border-black px-1' type="number" name=""
-                                                                onChange={(e) => handleMarksChange( student._id, e.target.value)} id="" />
+                                                            <input className='border border-black px-1' onLoad={(e) => loadMarks(e, student._id)} type="text" name=""
+                                                                value={marks[student._id] || ''}
+                                                                onChange={(e) => handleMarksChange(student._id, e.target.value)} />
                                                         </td>
                                                     </>
                                                 ) : (
-                                                    details.isRubrics == "Yes" ? <>
+                                                    details.isRubrics === "Yes" ? <>
                                                         <td>
                                                             {titles.length > 0 ? titles.map((element, idx) => (
                                                                 <div className='py-2' key={idx}>{element.rubric}</div>
@@ -331,14 +346,16 @@ function Dashboard() {
                                                                 </div>
                                                             ))}
                                                         </td>
-                                                    </> : <><div className='py-2'>
-                                                        <input
-                                                            className="px-1 border border-black rounded-sm"
-                                                            type="text"
-                                                            value={grades[student._id] || ''}
-                                                            onChange={(e) => handleGradeChange(student._id,  e.target.value)}
-                                                        />
-                                                    </div></>
+                                                    </> : <>
+                                                        <div className='py-2'>
+                                                            <input
+                                                                className="px-1 border border-black rounded-sm"
+                                                                type="text"
+                                                                value={grades[student._id] || ''}
+                                                                onChange={(e) => handleGradeChange(student._id, 0, e.target.value)}
+                                                            />
+                                                        </div>
+                                                    </>
                                                 )}
                                                 <td>
                                                     <div className=' '>
@@ -352,17 +369,16 @@ function Dashboard() {
                                                 </td>
                                                 <td>
                                                     <div>
-                                                        <button className='btn btn-primary' onClick={(e) => handleUpdate(student._id)}>Update</button>
+                                                        <button className='btn btn-primary' onClick={() => handleUpdate(student._id)}>Update</button>
                                                     </div>
                                                 </td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="6">No students found.</td>
+                                            <td colSpan="7">No students found.</td>
                                         </tr>
                                     )}
-
                                 </tbody>
                             </table>
                         </div>

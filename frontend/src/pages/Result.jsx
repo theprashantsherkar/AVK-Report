@@ -12,7 +12,7 @@ function Result({ result }) {
         header: {
             textAlign: 'center',
             fontWeight: 'bold',
-            fontSize: '20px',
+            fontSize: '24px',
             padding: '16px',
             border: '1px solid black'
         },
@@ -46,46 +46,46 @@ function Result({ result }) {
     return (
         <>
             <div className='d-flex justify-content-center align-items-center min-h-screen px-2 py-3 flex-column  w-full'>
-                <div className='border border-black w-75 h-full py-4 px-2 d-flex my-3 flex-column align-items-center'>
-                    <h1 className='fs-3 py-2 fw-semibold'>Acharya Vidya Kula</h1>
-                    <div className=' fw-medium fs-6'>Affiliated to ICSE KA 063</div>
-                    <div className=' fw-medium fs-6'>Aloka Road, Left Fork off</div>
-                    <div className='fw-medium fs-6'>Mysore-Madikeri Highway at 12th KM Stone</div>
-                    <div className='my-3'>
+                <div className=' w-5/6  py-4 px-2 d-flex my-3 flex-column align-items-center' style={{height: '800px'}}>
+                    <h1 className='font-bold py-2 text-4xl'>Acharya Vidya Kula</h1>
+                    <div className=' font-medium text-xl'>Affiliated to ICSE KA 063</div>
+                    <div className=' font-medium text-xl'>Aloka Road, Left Fork off</div>
+                    <div className='font-medium text-xl'>Mysore-Madikeri Highway at 12th KM Stone</div>
+                    <div className='my-1 py-3'>
                         <img className='w-52 h-38  logo' src={logo} alt="logo" /></div>
-                    <div className='fw-medium fs-4 fst-italic'>Report Card 2024-25</div>
+                    <div className='font-medium text-3xl '>Report Card 2024-25</div>
                     <div className='py-5'>
                         <Container>
-                            <Grid container spacing={2}>
+                            <Grid container spacing={2} style={{fontSize: '24px', fontWeight: '500'}}>
                                 <Grid item xs={6}>
-                                    <Typography variant="body1"><strong>Student Name:</strong></Typography>
+                                    <Typography variant="body1" style={{fontSize: '20px', fontWeight: '500'}}><strong>Student Name:</strong></Typography>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Typography variant="body1"><strong>{result[0]?.credentials.name || "Prashant Sherkar"}</strong></Typography>
+                                    <Typography variant="body1" style={{fontSize: '20px', fontWeight: '500'}}><strong>{result[0]?.credentials.name || "Prashant Sherkar"}</strong></Typography>
                                     <Box borderBottom={1} mt={1}></Box>
                                 </Grid>
 
                                 <Grid item xs={6}>
-                                    <Typography variant="body1"><strong>Class :</strong></Typography>
+                                    <Typography variant="body1" style={{fontSize: '20px', fontWeight: '500'}} ><strong>Class :</strong></Typography>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Typography variant="body1"><strong>{result[0]?.credentials.Class || "Class X"}</strong></Typography>
+                                    <Typography variant="body1" style={{fontSize: '20px', fontWeight: '500'}} ><strong>{result[0]?.credentials.Class || "Class X"}</strong></Typography>
                                     <Box borderBottom={1} mt={1}></Box>
                                 </Grid>
 
                                 <Grid item xs={6}>
-                                    <Typography variant="body1"><strong>Roll Number:</strong></Typography>
+                                    <Typography variant="body1" style={{fontSize: '20px', fontWeight: '500'}} ><strong>Roll Number:</strong></Typography>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Typography variant="body1"><strong>{result[0]?.credentials.roll || 23} </strong></Typography>
+                                    <Typography variant="body1" style={{fontSize: '20px', fontWeight: '500'}} ><strong>{result[0]?.credentials.roll || 23} </strong></Typography>
                                     <Box borderBottom={1} mt={1}></Box>
                                 </Grid>
 
                                 <Grid item xs={6}>
-                                    <Typography variant="body1"><strong>Class Teacher :</strong></Typography>
+                                    <Typography variant="body1" style={{fontSize: '20px', fontWeight: '500'}} ><strong>Class Teacher :</strong></Typography>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Typography variant="body1"><strong>{result[0]?.exam.teacher || "Vivek Sir"}</strong></Typography>
+                                    <Typography variant="body1" style={{fontSize: '20px', fontWeight: '500'}} ><strong>{result[0]?.exam?.teacher || "Vivek Sir"}</strong></Typography>
                                     <Box borderBottom={1} mt={1}></Box>
                                 </Grid>
                             </Grid>
@@ -98,7 +98,7 @@ function Result({ result }) {
 
             </div>
             <hr />
-            <div className='border border-black h-100 p-3 my-3 d-flex flex-column align-items-center  w-full'>
+            <div className='border border-black  p-3 my-5 d-flex flex-column align-items-center  w-full' style={{height: '800px'}}>
                 <div style={{ width: '80%', margin: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
@@ -111,17 +111,17 @@ function Result({ result }) {
                             </tr>
                             <tr>
                                 <th style={styles.subHeader}>Subjects and Skills</th>
-                                <th style={styles.subHeader}>Grade</th>
+                                <th style={styles.subHeader}>Grade/Marks</th>
                                 <th style={styles.subHeader}>Remarks</th>
                             </tr>
                         </thead>
                         <tbody>
                             {result.map((subject, index) => (
-                                <tr key={index}>
-                                    <td style={styles.cell}>{subject.credentials.subject}</td>
-                                    <td style={styles.cell}>{subject.marks || "grades to be added yet"}</td>
-                                    <td style={styles.cell}>{subject.remarks || "no remarks added"}</td>
-                                </tr>
+                            <tr key={index}>
+                                <td style={styles.cell}>{subject.credentials.subject}</td>
+                                <td style={styles.cell}>{subject.marks || "grades to be added yet"}</td>
+                                <td style={styles.cell}>{subject.remarks || "no remarks added"}</td>
+                            </tr>
                             ))}
                         </tbody>
                     </table>

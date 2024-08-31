@@ -26,6 +26,10 @@ const examSchema = new mongoose.Schema({
         type: [mongoose.Types.ObjectId],
         ref:"Subjects"
     },
+    canDelete: {
+        type: Boolean,
+        default: true
+    },
 
     createdAt: {
         type: String,

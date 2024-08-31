@@ -11,11 +11,14 @@ import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 export const LoginContext = createContext({
   user: {},
   isLoggedIn: false,
+  canEdit: true,
+  setCanEdit: () => { },
   setUser: () => { },
   setIsLoggedIn: () => { },
 });
 
 const AppWrapper = () => {
+  const [canEdit, setCanEdit] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({});

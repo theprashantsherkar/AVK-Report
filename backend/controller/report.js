@@ -289,11 +289,6 @@ export const sendEachMarks = async (req, res) => {
     const { studentId, examId, assessmentId } = req.query;
     const { marks, remarks } = req.body;
 
-    console.log(marks, remarks);
-
-    const student = await Student.findById(studentId);
-    const exam = await Exam.findById(examId);
-    const assessment = await Assessment.findById(assessmentId);
 
     if (!marks || !remarks) {
         return res.status(400).json({
@@ -301,33 +296,57 @@ export const sendEachMarks = async (req, res) => {
             message: "Enter Marks and Remarks first"
         })
     }
-
-
-    const resultAdded = await Result.create({
-        student: student._id,
-        exam: exam._id,
-        assessment: assessment._id,
-        Class: student.Class,
-        marks: marks,
-        remarks: remarks,
-        credentials: {
-            name: student.name,
-            Class: student.Class,
-            roll: student.rollNum,
-            assessment: assessment.title,
-            subject: assessment.subject,
-        }
-    })
-    if (!resultAdded) {
-        return res.status(500).json({
+    if (remarks.length > 150) {
+        return res.status(400).json({
             success: false,
-            message: "Something went wrong, Please try later."
+            message: "Remarks should be less than 150 characters"
         })
     }
+
+    const student = await Student.findById(studentId);
+    const exam = await Exam.findById(examId);
+    const assessment = await Assessment.findById(assessmentId);
+
+    const result = await Result.findOne({ student: studentId, exam: examId, assessment: assessmentId });
+    if(result){
+        result.marks = marks;
+        result.remarks = remarks;
+        await result.save();
+    }
+    else {
+        const resultAdded = await Result.create({
+            student: student._id,
+            exam: exam._id,
+            assessment: assessment._id,
+            Class: student.Class,
+            marks: marks,
+            remarks: remarks,
+            credentials: {
+                name: student.name,
+                Class: student.Class,
+                roll: student.rollNum,
+                assessment: assessment.title,
+                subject: assessment.subject,
+            }
+        })
+        exam.canDelete = false;
+        assessment.canDelete = false;
+        await exam.save();
+        await assessment.save();
+
+        if (!resultAdded) {
+            return res.status(500).json({
+                success: false,
+                message: "Something went wrong, Please try later."
+            })
+        }
+}
+
+
     res.status(200).json({
         success: true,
         message: "Marks Added Successfully.",
-        result: resultAdded,
+        result: result,
 
     })
 
@@ -369,6 +388,10 @@ export const sendEachGrades = async (req, res) => {
         grade: grades,
         remarks: remarks,
     })
+    exam.canDelete = false;
+    assessment.canDelete = false;
+    await exam.save();
+    await assessment.save();
     if (!resultAdded) {
         return res.status(500).json({
             success: false,
@@ -394,7 +417,7 @@ export const getEachResult = async (req, res, next) => {
             });
         }
 
-        const resultPromises = studentIds.map((element) => Result.find({ student: element }).populate("exam"));
+        const resultPromises = studentIds.map((element) => Result.find({ student: element }).populate("exam").populate("assessment"));
         const results = await Promise.all(resultPromises);
         if (!results) {
             return res.status(404).json({

@@ -19,20 +19,25 @@ function Rubrics({ subject }) {
     const [rubricList, setRubricList] = useState([]);
 
     const deleteHandler = async (id) => {
-        try {
-            const response = await axios.delete(`${backendURL}/rubrics/${id}`, {
+        const rubric = rubricList.find(rubric => rubric._id === id);
+        if (!(rubric.canDelete)) {
+            return toast.error("You are not authorized to delete this rubric!");
+        } else {
+            try {
+                const response = await axios.delete(`${backendURL}/rubrics/${id}`, {
 
-                headers: {
-                    "Content-Type":"application/json"
-                },
-                withCredentials: true,
-            })
-            if (!response.data.success) {
-                return toast.error('Something went wrong')
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    withCredentials: true,
+                })
+                if (!response.data.success) {
+                    return toast.error('Something went wrong')
+                }
+                toast.success(response.data.message);
+            } catch (error) {
+                console.log(error);
             }
-            toast.success(response.data.message);
-        } catch (error) {
-            console.log(error);
         }
     }
 

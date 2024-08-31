@@ -162,21 +162,34 @@ export const showStudents = async (req, res) => {
     const title = temp[2];
 
     const assessmentDetails = await Assessment.find({ title: title, subject: subject, Class: Class }).populate("parentExam");
-    
 
-    const student = await Student.find({ Class: Class, section: section });
+    const students = await Student.aggregate([
+        {
+            $lookup: {
+            from: "results",
+            localField: "_id",
+            foreignField: "student",
+            as: "results"
+            }
+        },
+    ])
 
-    if (!student || student.length == 0) {
-        return res.json({
-            success: false,
-            message:"no student exists of this class"
+    const student = students.filter(student => student.Class === Class && student.section === section);
+
+    const results = [];
+    student.map(student => {
+        student.results.map(result => {
+            if (result.credentials?.subject === subject) {
+                results.push(result);
+            }
         })
-    }
+    })
 
     res.status(200).json({
         success: true,
         message: "Students fetched",
-        student,
+        students: student,
+        existingResults: results,
         details: assessmentDetails
     })
 }
