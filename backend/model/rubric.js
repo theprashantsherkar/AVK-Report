@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const rubricSchema = new mongoose.Schema({
     rubric: {
         type: String,
-        required:true
+        
     },
     parentAssessment: {
         type: mongoose.Types.ObjectId,

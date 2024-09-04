@@ -6,7 +6,6 @@ export const addRubrics = async (req, res) => {
     const { id } = req.params;
     const { rubric } = req.body;
 
-    console.log(id, rubric);
     const assessment = await Assessment.findById(id);
 
     const newRubric = await Rubric.create({
@@ -35,7 +34,7 @@ export const addRubrics = async (req, res) => {
 
 
 export const editRubric = async (req, res) => {
-    const { id } = req.params;
+    const id = req.params.id;
     const { newRubric } = req.body;
 
     let rubrics = await Rubric.findById(id);
@@ -52,13 +51,13 @@ export const editRubric = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "rubric updated successfully",
-            newRubric
+            rubrics
         })
     }
 }
 
 export const getSpecificRubrics = async (req, res) => {
-    const { id } = req.params;
+    const id = req.params.id;
     const rubrics = await Rubric.find({ parentAssessment: id }).populate("parentAssessment");
     if (!rubrics) {
         return res.status(404).json({

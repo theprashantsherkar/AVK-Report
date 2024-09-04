@@ -14,9 +14,10 @@ function Rubrics({ subject }) {
     const navigate = useNavigate();
     const { id } = useParams();
     const [updatedRubric, setUpdatedRubric] = useState("");
-
+    const [isUpdate, setIsUpdate] = useState(false);
     const [rubrics, setRubrics] = useState('');
     const [rubricList, setRubricList] = useState([]);
+    const [rubricId, setRubricId] = useState("");
 
     const deleteHandler = async (id) => {
         const rubric = rubricList.find(rubric => rubric._id === id);
@@ -41,59 +42,63 @@ function Rubrics({ subject }) {
         }
     }
 
-    const updateHandler = async (id) => {
-        try {
-            setRubrics(element.rubric);
-            setRubrics(e.target.value);
-            const response = await axios.put(`${backendURL}/rubrics/update/${id}`, {
-                newRubric: rubrics,
-            }, {
-                headers: {
-                    "Content-Type":"application/json"
-                },
-                withCredentials:true,
-            })
-            if (!response.data.success) {
-                return toast.error('Something went wrong');
-            }
 
-            setUpdatedRubric(response.data.updatedRubric);
-            toast.success(response.data.message);
-
-        } catch (error) {
-            console.log(error);
-            toast.error("Something went wrong")
-        }
+    const updateHandler = (e, rubricId, rubric) => {
+        setIsUpdate(true);
+        setRubricId(rubricId);
     }
 
-    const handleSubmit = async () => {
-        try {
-            const response = await axios.post(`${backendURL}/rubrics/add/${id}`, {
-                rubric:rubrics
-            },
-                {
+    const handleSubmit = async (rubricId) => {
+        if (isUpdate) {
+            try {
+                const response = await axios.put(`${backendURL}/rubrics/update/${rubricId}`, {
+                    newRubric: updatedRubric,
+                }, {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    withCredentials: true,
+                });
+                if (!response.data.success) {
+                    return toast.error('Something went wrong');
+                }
+
+                setUpdatedRubric(response.data.updatedRubric);
+                toast.success(response.data.message);
+                setIsUpdate(false);
+            } catch (error) {
+                console.log(error);
+                toast.error("Cannot update the rubric");
+                setIsUpdate(false);
+            }
+        } else {
+            try {
+                const response = await axios.post(`${backendURL}/rubrics/add/${id}`, {
+                    rubric: rubrics,
+                }, {
                     headers: {
                         "Content-Type": "application/json",
                     },
                     withCredentials: true,
-                })
-            if (!response.data.success) {
-                return toast.error("Something Went wrong");
+                });
+                if (!response.data.success) {
+                    return toast.error("Something Went wrong");
+                }
+                toast.success(response.data.message);
+                setRubricList(response.data.rubrics);
+                setRubrics("");
+            } catch (error) {
+                console.log(error);
             }
-            toast.success(response.data.message);
-            setRubricList(response.data.rubrics);
-            setRubrics("");
-        } catch (error) {
-            console.log(error);
         }
-    }
+    };
 
     useEffect(() => {
         try {
             const loaded = async () => {
                 const response = await axios.get(`${backendURL}/rubrics/getRubrics/${id}`, {
                     headers: {
-                        "Content-Type":"application/json"
+                        "Content-Type": "application/json"
                     },
                     withCredentials: true,
                 })
@@ -129,10 +134,14 @@ function Rubrics({ subject }) {
                         <div className='flex items-center gap-3 w-full' >
                             <Box sx={{ width: '300px', marginY: "10px" }}>
                                 <FormControl fullWidth>
-                                    <TextField id="outlined-basic" label="Select Title" variant="outlined" fullWidth value={rubrics} onChange={(e) => setRubrics(e.target.value)} />
+                                    <TextField
+                                        id="outlined-basic"
+                                        label="Select Title" variant="outlined" fullWidth
+                                        value={isUpdate ? updatedRubric : rubrics}
+                                        onChange={isUpdate ? (e) => setUpdatedRubric(updatedRubric) : (e) => setRubrics(e.target.value)} />
                                 </FormControl>
                             </Box>
-                            <button className='btn btn-primary' onClick={handleSubmit}>Save</button>
+                            <button className='btn btn-primary' onClick={() => handleSubmit(rubricId)}>{isUpdate ? "Update" : "Save"}</button>
                         </div>
                         <hr />
                         <div className='w-full'>
@@ -150,8 +159,8 @@ function Rubrics({ subject }) {
                                             <tr>
                                                 <td>{element.rubric}</td>
                                                 <td>{element.createdAt}</td>
-                                                <td><button className='btn btn-danger' onClick={() => deleteHandler(element._id)}>Delete</button>{"     "}
-                                                <button className='btn btn-warning' >update</button></td>
+                                                <td><button className='btn btn-danger' onClick={(e) => deleteHandler(element._id)}>Delete</button>{"     "}
+                                                    <button className='btn btn-warning' onClick={(e) => updateHandler(e, element._id, element.rubric)}>update</button></td>
                                             </tr>
                                         ))}
                                     </>) : (<></>)}

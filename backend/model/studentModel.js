@@ -13,12 +13,12 @@ const studentSchema = new mongoose.Schema({
     },
     section: {
         type: String,
-      required:true,  
+      required:true,
     },
     email: {
         type: String,
         required: true,
-       unique:true
+        unique: true
     },
     rollNo: {
         type: Number,
@@ -27,7 +27,15 @@ const studentSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: new Date(Date.now()),
-    }
+    },
+    AdmissionNo: {
+        type: String,
+        required: true,
+    },
+    ContactNo: {
+        type: Number,
+        required: true,
+    },
 })
 
 

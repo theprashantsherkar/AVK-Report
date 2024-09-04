@@ -26,6 +26,7 @@ function Assessment() {
     const [assList, setAssList] = useState([]);
 
     const deleteHandler = async (id) => {
+        console.log(id);
         const assessment = assList.find(assessment => assessment._id === id);
         if (!(assessment.canDelete)) {
             return toast.error("You are not authorized to delete this assessment!")
@@ -112,7 +113,7 @@ function Assessment() {
             };
             fetchAssessments();
         }
-    }, [id, handleSubmit, deleteHandler]); // Add dependencies for other actions like delete, post, and update
+    }, [id, handleSubmit, deleteHandler]);
 
 
     return (

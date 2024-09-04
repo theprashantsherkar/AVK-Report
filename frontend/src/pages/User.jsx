@@ -3,30 +3,63 @@ import Sidebar from '../components/Sidebar'
 import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import Header from '../components/Header';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import { backendURL } from '../App';
 
 function User() {
 
     const [session, setSession] = useState('');
     const [users, setUsers] = useState([]);
+    const [data, setData] = useState([]);
+    const [file, setFile] = useState("");
+
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
+    }
+
+    const handleUpload = async (e) => {
+        e.preventDefault();
+        if (!file) {
+            return toast.error('upload file first')
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+            const response = await axios.post(`${backendURL}/users/upload`, formData, {
+                headers: {
+                    "Content-Type": "multipart-form-data"
+                },
+                withCredentials: true
+            });
+            if (!response.data.success) {
+                return toast.error(response.data.message);
+            }
+
+            toast.success(response.data.message)
+
+        } catch (error) {
+            console.log(error);
+            toast.error('Internal Server Error, try after sometime!')
+        }
+    }
 
     useEffect(() => {
         const fetchUsers = async () => {
             const { data } = await axios.get(`${backendURL}/users/getallusers`, {
                 headers: {
-                    "Content-Type":"application/json",
+                    "Content-Type": "application/json",
                 },
                 withCredentials: true,
 
             })
-
             setUsers(data.users);
         }
         fetchUsers();
     })
     return (
         <>
-            <Header/>
+            <Header />
             <div className='flex items-start w-full'>
                 <div className='w-1/6'>
                     <Sidebar />
@@ -37,25 +70,28 @@ function User() {
                     </div>
                     <hr />
                     <div className='flex items-center  gap-4'>
-                        <Box sx={{ width: '200px' }}>
-                            <FormControl fullWidth>
-                                <InputLabel id="demo-simple-select-label">Select Session</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                    value={session}
-                                    label="Select Assessment"
-                                    onChange={(e)=>setSession(e.target.value)}
-                                >
-                                    <MenuItem value={"2024-25"}>2024-25</MenuItem>
-                                    <MenuItem value={"2023-24"}>2023-24</MenuItem>
-                                    <MenuItem value={"2022-23"}>2022-23</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Box>
-                        <input type="file" name="" id="" className='border border-black p-2 rounded-md' />
+                        <form className='flex items-center gap-4 'onSubmit={handleUpload}>
 
-                        <button className='btn btn-primary'>Upload</button>
+                            {/* <Box sx={{ width: '200px' }}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="demo-simple-select-label">Select Session</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={session}
+                                        label="Select Assessment"
+                                        onChange={(e) => setSession(e.target.value)}
+                                    >
+                                        <MenuItem value={"2024-25"}>2024-25</MenuItem>
+                                        <MenuItem value={"2023-24"}>2023-24</MenuItem>
+                                        <MenuItem value={"2022-23"}>2022-23</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Box> */}
+                            <input type="file" name="file" id="" className='border border-black p-2 rounded-md' onChange={handleFileChange}/>
+
+                            <button className='btn btn-primary' type='submit'>Upload</button>
+                        </form>
                     </div>
 
                     <hr />
@@ -73,16 +109,16 @@ function User() {
                                     <tbody>
                                         {users.map((element, index) => (<>
                                             <tr>
-                                                <td>{ index + 1 }</td>
-                                                <td>{ element.name}</td>
-                                                <td>{ element.role}</td>
-                                        </tr>
+                                                <td>{index + 1}</td>
+                                                <td>{element.name}</td>
+                                                <td>{element.role}</td>
+                                            </tr>
                                         </>))}
                                     </tbody>
 
                                 </table>
                             </>
-                        ) }
+                        )}
                     </div>
                 </div>
             </div>

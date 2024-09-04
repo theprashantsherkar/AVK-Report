@@ -88,28 +88,33 @@ export const specificAss = async (req, res) => {
 
 
 export const deleteAss = async (req, res, next) => {
-    const assId = req.params.id;
-    const assessment = await Assessment.findById(assId);
-    if (!assessment) {
-        return res.status(404).json({
-            success: false,
-            message: "no assessment found"
-        })
-    }
-    await assessment.deleteOne();
-    const isDeleted = await assessment.save();
-    if (!isDeleted) {
+    try {
+        const assId = req.params.id;
+        const assessment = await Assessment.findById(assId);
+
+        if (!assessment) {
+            return res.status(404).json({
+                success: false, // Corrected typo here
+                message: "No assessment found"
+            });
+        }
+
+        // Perform the delete operation
+        await assessment.deleteOne();
+
+        // Return success response
+        return res.status(200).json({
+            success: true,
+            message: "Assessment deleted successfully"
+        });
+    } catch (error) {
+        console.error("Error deleting assessment:", error);
         return res.status(500).json({
             success: false,
-            message: "delete operation failed",
-
-        })
+            message: "Delete operation failed"
+        });
     }
-    return res.status(200).json({
-        success: true,
-        message: "assessment deleted successfully"
-    })
-}
+};
 
 export const UpdateAss = async (req, res, next) => {
     const {id} = req.params
