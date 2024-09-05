@@ -44,8 +44,10 @@ function Rubrics({ subject }) {
 
 
     const updateHandler = (e, rubricId, rubric) => {
+        setRubrics(rubric);
         setIsUpdate(true);
         setRubricId(rubricId);
+        
     }
 
     const handleSubmit = async (rubricId) => {
@@ -137,8 +139,8 @@ function Rubrics({ subject }) {
                                     <TextField
                                         id="outlined-basic"
                                         label="Select Title" variant="outlined" fullWidth
-                                        value={isUpdate ? updatedRubric : rubrics}
-                                        onChange={isUpdate ? (e) => setUpdatedRubric(updatedRubric) : (e) => setRubrics(e.target.value)} />
+                                        value={ rubrics}
+                                        onChange={(e) => setRubrics(e.target.value)} />
                                 </FormControl>
                             </Box>
                             <button className='btn btn-primary' onClick={() => handleSubmit(rubricId)}>{isUpdate ? "Update" : "Save"}</button>
