@@ -22,7 +22,7 @@ function Exam() {
     const [subjects, setSubjects] = useState([]);
     const { canEdit } = useContext(LoginContext);
 
-    const [selectedExamId, setSelectedExamId] = useState(null); 
+    const [selectedExamId, setSelectedExamId] = useState(null);
 
     const deleteHandler = async (id) => {
         const exam = examData.find(exam => exam._id === id);

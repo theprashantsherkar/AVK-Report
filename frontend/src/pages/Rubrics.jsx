@@ -47,14 +47,14 @@ function Rubrics({ subject }) {
         setRubrics(rubric);
         setIsUpdate(true);
         setRubricId(rubricId);
-        
+
     }
 
     const handleSubmit = async (rubricId) => {
         if (isUpdate) {
             try {
                 const response = await axios.put(`${backendURL}/rubrics/update/${rubricId}`, {
-                    newRubric: updatedRubric,
+                    newRubric: rubrics,
                 }, {
                     headers: {
                         "Content-Type": "application/json"
@@ -64,10 +64,12 @@ function Rubrics({ subject }) {
                 if (!response.data.success) {
                     return toast.error('Something went wrong');
                 }
+                // console.log(updatedRubric);
 
                 setUpdatedRubric(response.data.updatedRubric);
                 toast.success(response.data.message);
                 setIsUpdate(false);
+                setRubrics("");
             } catch (error) {
                 console.log(error);
                 toast.error("Cannot update the rubric");
@@ -113,7 +115,6 @@ function Rubrics({ subject }) {
             console.log(error)
         }
 
-
     }, [handleSubmit, deleteHandler]);
 
 
@@ -139,8 +140,10 @@ function Rubrics({ subject }) {
                                     <TextField
                                         id="outlined-basic"
                                         label="Select Title" variant="outlined" fullWidth
-                                        value={ rubrics}
-                                        onChange={(e) => setRubrics(e.target.value)} />
+                                        value={rubrics}
+                                        onChange={(e) => {
+                                            setRubrics(e.target.value)
+                                        }} />
                                 </FormControl>
                             </Box>
                             <button className='btn btn-primary' onClick={() => handleSubmit(rubricId)}>{isUpdate ? "Update" : "Save"}</button>

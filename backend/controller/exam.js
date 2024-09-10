@@ -45,9 +45,8 @@ export const createExam = async(req, res) => {
 }
 
 export const addSubjects = async(req, res) => {
-    const { selectedSubjects } = req.body;
-    const id = req.query.id;
-
+    const selectedSubjects = req.body.SubjectList;
+    const { id } = req.query;
 
     if (!selectedSubjects || selectedSubjects.length == 0) {
         return res.json({
@@ -143,13 +142,6 @@ export const getOldSubjects = async(req, res) => {
         var subjectNames = exam.subjects.map(subject => subject.subject);
     }
 
-    if (!subjectNames || subjectNames.length == 0) {
-         return res.status(404).json({
-            success: false,
-            message: "No Subjects added yet",
-            subjectNames,
-        })
-    }
 
     res.status(200).json({
         success: true,

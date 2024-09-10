@@ -3,6 +3,7 @@ import { Autocomplete, TextField, Chip, Box, Button, Dialog, DialogActions, Dial
 import axios from 'axios';
 import { backendURL } from '../App';
 import toast from 'react-hot-toast';
+import { arrow } from '@popperjs/core';
 
 function UploadDialog({ showDialog, setShowDialog, id }) {
     const [subjects, setSubjects] = useState([]);
@@ -64,10 +65,13 @@ function UploadDialog({ showDialog, setShowDialog, id }) {
     };
 
     const handleUpdate = async () => {
+
+        const SubjectList = Array.from(new Set(selectedSubjects));
         try {
+            console.log(SubjectList);
             const response = await axios.post(
                 `${backendURL}/exam/addsubjects?id=${id}`,
-                { selectedSubjects },
+                { SubjectList },
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -75,9 +79,7 @@ function UploadDialog({ showDialog, setShowDialog, id }) {
                     withCredentials: true,
                 }
             );
-            if (!response.data.success) {
-                return toast.error('Something went wrong');
-            }
+            console.log(response);
             toast.success(response.data.message);
             setShowDialog(false);
         } catch (error) {
