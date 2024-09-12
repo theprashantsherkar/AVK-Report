@@ -12,24 +12,24 @@ function Dummy() {
 
     useEffect(() => {
         const generatePdf = async () => {
-            const input = document.getElementById('pdf-content');
-            const canvas = await html2canvas(input, { scale: 2 });
-
-            const imgWidth = 297; // A4 width in mm for landscape
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
             const pdf = new jsPDF('landscape', 'mm', 'a4');
 
-            let heightLeft = imgHeight;
-            let position = 0;
+            for (let i = 0; i < results.length; i++) {
+                const input = document.getElementById(`result-${i}`);
 
-            pdf.addImage(canvas, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pdf.internal.pageSize.getHeight();
+                if (input) {
+                    const canvas = await html2canvas(input, { scale: 2 });
+                    const imgWidth = 297; // A4 width in mm for landscape
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-            while (heightLeft > 0) {
-                position = heightLeft - imgHeight;
-                pdf.addPage();
-                pdf.addImage(canvas, 'PNG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pdf.internal.pageSize.getHeight();
+                    const position = 0;
+
+                    if (i > 0) {
+                        pdf.addPage();  // Add a new page for every iteration after the first
+                    }
+
+                    pdf.addImage(canvas, 'PNG', 0, position, imgWidth, imgHeight);
+                }
             }
 
             pdf.save('download.pdf');
@@ -38,7 +38,7 @@ function Dummy() {
         if (results) {
             generatePdf();
         }
-    }, [results]);
+    }, []);
 
     useEffect(() => {
         if (!results) {
@@ -50,7 +50,7 @@ function Dummy() {
     return (
         <div id='pdf-content'>
             {results?.map((result, index) => (
-                <div key={index} id={`result-${index}`}>
+                <div key={index} id={`result-${index}`} style={{ marginBottom: '20px' }}>
                     <Result result={result} />
                 </div>
             ))}

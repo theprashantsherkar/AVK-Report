@@ -69,6 +69,7 @@ function Dashboard() {
             setStudentList(response.data.students);
             const details = response.data.details[0];
             setDetails(details);
+            console.log(details);
 
             const { data } = await axios.get(`${backendURL}/rubrics/getRubrics/${details._id}`, {
                 headers: {

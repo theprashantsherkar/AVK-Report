@@ -20,18 +20,21 @@ function Result({ result }) {
             fontWeight: 'bold',
             border: '1px solid black',
             padding: '8px',
-            backgroundColor: '#f2f2f2'
+            backgroundColor: '#f2f2f2',
+            fontWeight: 'bold'
         },
         cell: {
             border: '1px solid black',
             padding: '8px',
-            textAlign: 'left'
+            textAlign: 'left',
+            fontWeight: 'bold'
         },
         row: {
             display: 'flex',
             borderBottom: '1px solid black',
             padding: '8px 0',
-            fontSize: '16px'
+            fontSize: '20px',
+            fontWeight: 'bold'
         },
         label: {
             flex: '1',
@@ -39,13 +42,14 @@ function Result({ result }) {
         },
         value: {
             flex: '2',
-            textAlign: 'left'
+            textAlign: 'left',
+            fontWeight: 'bold'
         }
     };
 
     return (
         <>
-            <div className='d-flex justify-content-center align-items-center min-h-screen px-2 py-3 flex-column  w-full'>
+            <div className='d-flex justify-content-center align-items-center min-h-screen px-2 py-3 flex-column  w-full font-bold'>
                 <div className=' w-5/6  py-4 px-2 d-flex my-3 flex-column align-items-center' style={{height: '800px'}}>
                     <h1 className='font-bold py-2 text-4xl'>Acharya Vidya Kula</h1>
                     <div className=' font-medium text-xl'>Affiliated to ICSE KA 063</div>
@@ -106,21 +110,21 @@ function Result({ result }) {
                                 <th colSpan="3" style={styles.header}>Student Name: {result[0]?.credentials.name}</th>
                             </tr>
                             <tr>
-                                <th colSpan="2" style={styles.subHeader}>{result[0]?.credentials.Class}</th>
-                                <th style={styles.subHeader}>{result[0]?.credentials.assessment}</th>
+                                <th colSpan="2" style={styles.subHeader} className='text-xl'>{result[0]?.credentials.Class}</th>
+                                <th style={styles.subHeader} className='text-xl'>{result[0]?.credentials.assessment}</th>
                             </tr>
                             <tr>
-                                <th style={styles.subHeader}>Subjects and Skills</th>
-                                <th style={styles.subHeader}>Grade/Marks</th>
-                                <th style={styles.subHeader}>Remarks</th>
+                                <th style={styles.subHeader} className='text-xl'>Subjects and Skills</th>
+                                <th style={styles.subHeader} className='text-xl'>Grade/Marks</th>
+                                <th style={styles.subHeader} className='text-xl'>Remarks</th>
                             </tr>
                         </thead>
                         <tbody>
                             {result.map((subject, index) => (
                             <tr key={index}>
-                                <td style={styles.cell}>{subject.credentials.subject}</td>
-                                <td style={styles.cell}>{subject.marks || "grades to be added yet"}</td>
-                                <td style={styles.cell}>{subject.remarks || "no remarks added"}</td>
+                                <td style={styles.cell} className='text-xl'>{subject.credentials.subject}</td>
+                                <td style={styles.cell} className='text-xl'>{subject.marks || "grades to be added yet"}</td>
+                                <td style={styles.cell} className='text-xl'>{subject.remarks || "no remarks added"}</td>
                             </tr>
                             ))}
                         </tbody>
@@ -128,16 +132,16 @@ function Result({ result }) {
                     <div className='my-3' style={{ width: '80%', margin: 'auto' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                             <tr>
-                                <td style={styles.cell}>Class Teacher's Signature</td>
-                                <td style={styles.cell}></td>
+                                <td style={styles.cell} className='text-xl'>Class Teacher's Signature</td>
+                                <td style={styles.cell} className='w-1/2'></td>
                             </tr>
                             <tr>
-                                <td style={styles.cell}>Principal's Signature</td>
-                                <td style={styles.cell}></td>
+                                <td style={styles.cell} className='text-xl'>Principal's Signature</td>
+                                <td style={styles.cell} className='w-1/2'></td>
                             </tr>
                             <tr>
-                                <td style={styles.cell}>Parents Signature</td>
-                                <td style={styles.cell}></td>
+                                <td style={styles.cell} className='text-xl'>Parents Signature</td>
+                                <td style={styles.cell} className='w-1/2'></td>
                             </tr>
                         </table>
                     </div>
@@ -145,29 +149,29 @@ function Result({ result }) {
                         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center' }}>
                             <thead>
                                 <tr>
-                                    <th colSpan="2" style={{ border: '1px solid black', backgroundColor: '#f2f2f2', padding: '10px', fontWeight: 'bold' }}>GRADE INDICES</th>
+                                    <th colSpan="2" style={{ border: '1px solid black', backgroundColor: '#f2f2f2', padding: '10px', fontWeight: 'bold' }} className='text-xl'>GRADE INDICES</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td style={{ border: '1px solid black', padding: '10px', fontWeight: 'bold', backgroundColor: '#f2f2f2' }}>Co-Scholastic</td>
-                                    <td style={{ border: '1px solid black', padding: '10px', fontWeight: 'bold', backgroundColor: '#f2f2f2' }}>Scholastic</td>
+                                    <td style={{ border: '1px solid black', padding: '10px', fontWeight: 'bold', backgroundColor: '#f2f2f2' }} className='w-1/2 text-xl'>Co-Scholastic</td>
+                                    <td style={{ border: '1px solid black', padding: '10px', fontWeight: 'bold', backgroundColor: '#f2f2f2' }} className='w-1/2 text-xl'>Scholastic</td>
                                 </tr>
                                 <tr>
-                                    <td style={{ border: '1px solid black', padding: '10px' }}>A – Excellent</td>
-                                    <td style={{ border: '1px solid black', padding: '10px' }}>A – 80-100%</td>
+                                    <td style={{ border: '1px solid black', padding: '10px', fontWeight: 'bold' }} className='w-1/2 text-xl'>A – Excellent</td>
+                                    <td style={{ border: '1px solid black', padding: '10px', fontWeight: 'bold' }} className='w-1/2 text-xl'>A – 80-100%</td>
                                 </tr>
                                 <tr>
-                                    <td style={{ border: '1px solid black', padding: '10px' }}>B – Very Good</td>
-                                    <td style={{ border: '1px solid black', padding: '10px' }}>B – 60-79%</td>
+                                    <td style={{ border: '1px solid black', padding: '10px', fontWeight: 'bold' }} className='w-1/2 text-xl'>B – Very Good</td>
+                                    <td style={{ border: '1px solid black', padding: '10px', fontWeight: 'bold' }} className='w-1/2 text-xl'>B – 60-79%</td>
                                 </tr>
                                 <tr>
-                                    <td style={{ border: '1px solid black', padding: '10px' }}>C – Good</td>
-                                    <td style={{ border: '1px solid black', padding: '10px' }}>C – 35-59%</td>
+                                    <td style={{ border: '1px solid black', padding: '10px', fontWeight: 'bold' }} className='w-1/2 text-xl'>C – Good</td>
+                                    <td style={{ border: '1px solid black', padding: '10px', fontWeight: 'bold' }} className='w-1/2 text-xl'>C – 35-59%</td>
                                 </tr>
                                 <tr>
-                                    <td style={{ border: '1px solid black', padding: '10px' }}>D – Scope for Improvement</td>
-                                    <td style={{ border: '1px solid black', padding: '10px' }}>D – 0-34%</td>
+                                    <td style={{ border: '1px solid black', padding: '10px', fontWeight: 'bold' }} className='w-1/2 text-xl'>D – Scope for Improvement</td>
+                                    <td style={{ border: '1px solid black', padding: '10px', fontWeight: 'bold' }} className='w-1/2 text-xl'>D – 0-34%</td>
                                 </tr>
                             </tbody>
                         </table>

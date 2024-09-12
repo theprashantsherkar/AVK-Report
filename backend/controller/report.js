@@ -289,6 +289,7 @@ export const sendEachMarks = async (req, res) => {
     const { studentId, examId, assessmentId } = req.query;
     const { marks, remarks } = req.body;
 
+    console.log(req.query);
 
     if (!marks || !remarks) {
         return res.status(400).json({

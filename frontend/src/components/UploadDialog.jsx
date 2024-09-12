@@ -64,12 +64,13 @@ function UploadDialog({ showDialog, setShowDialog, id }) {
         );
     };
 
-    const handleUpdate = async () => {
+    const handleUpdate = async (id) => {
 
-        const SubjectList = Array.from(new Set(selectedSubjects));
+        const SubjectList = [...(new Set(selectedSubjects))];
         if (isUpdate) {
             try {
-                const response = await axios.put(`${backendURL}/updateSubs?id=${id}`, {
+                console.log(typeof(SubjectList));
+                const response = await axios.put(`${backendURL}/exam/updateSubs/${id}`, {
                     SubjectList
                 },
                     {
@@ -88,11 +89,12 @@ function UploadDialog({ showDialog, setShowDialog, id }) {
                 toast.error("Something went wrong")
             }
         }
-        else {
+        else
+        {
             try {
                 console.log(SubjectList);
                 const response = await axios.post(
-                    `${backendURL}/exam/addsubjects?id=${id}`,
+                    `${backendURL}/exam/addsubjects/${id}`,
                     { SubjectList },
                     {
                         headers: {
@@ -104,6 +106,7 @@ function UploadDialog({ showDialog, setShowDialog, id }) {
                 console.log(response);
                 toast.success(response.data.message);
                 setShowDialog(false);
+                setIsUpdate(true);
             } catch (error) {
                 console.log(error);
             }
@@ -164,7 +167,7 @@ function UploadDialog({ showDialog, setShowDialog, id }) {
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" color="primary" onClick={handleUpdate}>
+                <Button variant="contained" color="primary" onClick={() => handleUpdate(id)}>
                     Update
                 </Button>
                 <Button variant="outlined" onClick={handleClose}>

@@ -5,8 +5,8 @@ const router = express.Router();
 
 router.get('/getExam', getAllExams);
 router.post('/newExam', createExam)
-router.post('/addsubjects', addSubjects);
-router.put('/updateSubs', updateSubs);
+router.post('/addsubjects/:id', addSubjects);
+router.put('/updateSubs/:id', updateSubs);
 router.get('/old/:id', getOldSubjects);
 router.get('/getDetails', getExamDetails);
 router.delete('/:id', removeExam)

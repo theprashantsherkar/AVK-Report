@@ -3,11 +3,11 @@ import { Exam } from '../model/examModel.js';
 import { Subject } from '../model/subjects.js';
 
 export const getAllExams = async (req, res) => {
-    const exams = await Exam.find({ });
+    const exams = await Exam.find({});
     if (!exams || exams.length == 0) {
         return res.status(404).json({
             success: false,
-            message:"no exams found"
+            message: "no exams found"
         })
     }
     res.status(200).json({
@@ -17,12 +17,12 @@ export const getAllExams = async (req, res) => {
     })
 }
 
-export const createExam = async(req, res) => {
+export const createExam = async (req, res) => {
     const { Class, teacher, section, session } = req.body;
     if (!Class || !teacher || !section || !session) {
         return res.json({
             success: false,
-            message:"enter all fields",
+            message: "enter all fields",
         })
     }
     const newExam = await Exam.create({
@@ -34,7 +34,7 @@ export const createExam = async(req, res) => {
     if (!newExam) {
         return res.json({
             success: false,
-            message:"Cant create Exam, try later."
+            message: "Cant create Exam, try later."
         })
     }
     res.status(200).json({
@@ -46,18 +46,29 @@ export const createExam = async(req, res) => {
 
 export const updateSubs = async (req, res) => {
     const { id } = req.params;
-    const { subjectList } = req.body;
-    if (!id || !subjectList) {
-        return res.status(500).json({
+    const { SubjectList } = req.body;
+
+    if (!SubjectList || SubjectList.length == 0) {
+        return res.json({
             success: false,
-            message:"add subject list first"
+            message: "enter subjects first",
         })
     }
+
+    const updatedSubjects = await Subject.find({ subject: { $in: SubjectList } })
     const exam = await Exam.findById(id);
-    exam.subjects = subjectList;
+    if (!exam) {
+        return res.json({
+            success: false,
+            message: "Exam not found",
+        })
+
+    }
+
+    exam.subjects = updatedSubjects;
     const isUpdated = await exam.save();
     if (!isUpdated) {
-        return res.status(500).json({success:false, message:"somehting went wrong"})
+        return res.status(500).json({ success: false, message: "somehting went wrong" })
     }
 
     res.status(200).json({
@@ -67,9 +78,9 @@ export const updateSubs = async (req, res) => {
 
 }
 
-export const addSubjects = async(req, res) => {
+export const addSubjects = async (req, res) => {
     const selectedSubjects = req.body.SubjectList;
-    const { id } = req.query;
+    const { id } = req.params;
 
     if (!selectedSubjects || selectedSubjects.length == 0) {
         return res.json({
@@ -79,26 +90,21 @@ export const addSubjects = async(req, res) => {
     }
 
     const subjects = await Subject.find({ subject: { $in: selectedSubjects } });
+    let exam = await Exam.findById(id);
 
-    const ids = subjects.map(element => element._id);
-
-    const exam = await Exam.findById(id);
-
-    ids.forEach(element => {
-        exam.subjects.push(element);
-    });
+    exam.subjects = subjects;
 
     const isSaved = await exam.save();
     if (!isSaved) {
         return res.json({
-            success:false,
-            message:"Something went wrong"
+            success: false,
+            message: "Something went wrong"
         })
 
     }
     res.status(200).json({
         success: true,
-        message:"subjects added successfully"
+        message: "subjects added successfully"
     })
 
 
@@ -109,7 +115,7 @@ export const getExamDetails = async (req, res) => {
     const exam = await Exam.findById(id).populate('subjects');
     res.status(200).json({
         success: true,
-        message:"exams details fetched",
+        message: "exams details fetched",
         exam
     });
 }
@@ -121,38 +127,38 @@ export const deleteExam = async (req, res) => {
     if (!isDeleted) {
         return res.json({
             success: false,
-            message:"Cant Delete this Exam"
+            message: "Cant Delete this Exam"
         })
     }
 
     res.status(200).json({
         success: true,
-        message:"Exam deleted successfully."
+        message: "Exam deleted successfully."
     })
 }
 
 
-export const removeExam =async (req, res) => {
+export const removeExam = async (req, res) => {
     const id = req.params.id
     try {
         const exam = await Exam.findById(id);
         if (exam) {
             await exam.deleteOne();
-             return res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 message: "Exam deleted"
             })
         }
         return res.json({
             success: false,
-            message:"no exam found"
+            message: "no exam found"
         })
     } catch (error) {
         console.log(error);
     }
 }
 
-export const getOldSubjects = async(req, res) => {
+export const getOldSubjects = async (req, res) => {
     const id = req.params.id;
 
     const exam = await Exam.findById(id).populate('subjects');
@@ -174,12 +180,12 @@ export const getOldSubjects = async(req, res) => {
 }
 
 
-export const getTeachers =async (req, res) => {
+export const getTeachers = async (req, res) => {
     const teachers = await User.find({});
     if (!teachers || teachers.length == 0) {
         return res.status(404).json({
             success: false,
-            message:"no teachers found"
+            message: "no teachers found"
         })
     }
 

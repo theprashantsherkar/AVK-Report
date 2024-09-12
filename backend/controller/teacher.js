@@ -162,7 +162,7 @@ export const showStudents = async (req, res) => {
     const title = temp[2];
 
     const assessmentDetails = await Assessment.find({ title: title, subject: subject, Class: Class }).populate("parentExam");
-
+    console.log(assessmentDetails);
     const students = await Student.aggregate([
         {
             $lookup: {
