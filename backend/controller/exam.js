@@ -44,6 +44,29 @@ export const createExam = async(req, res) => {
     })
 }
 
+export const updateSubs = async (req, res) => {
+    const { id } = req.params;
+    const { subjectList } = req.body;
+    if (!id || !subjectList) {
+        return res.status(500).json({
+            success: false,
+            message:"add subject list first"
+        })
+    }
+    const exam = await Exam.findById(id);
+    exam.subjects = subjectList;
+    const isUpdated = await exam.save();
+    if (!isUpdated) {
+        return res.status(500).json({success:false, message:"somehting went wrong"})
+    }
+
+    res.status(200).json({
+        success: true,
+        message: "Exam updated Successfully",
+    })
+
+}
+
 export const addSubjects = async(req, res) => {
     const selectedSubjects = req.body.SubjectList;
     const { id } = req.query;

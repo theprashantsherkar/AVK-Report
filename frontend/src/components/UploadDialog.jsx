@@ -9,6 +9,7 @@ function UploadDialog({ showDialog, setShowDialog, id }) {
     const [subjects, setSubjects] = useState([]);
     const [addedSubjects, setAddedSubjects] = useState([]);
     const [selectedSubjects, setSelectedSubjects] = useState([]);
+    const [isUpdate, setIsUpdate] = useState(false);
 
     useEffect(() => {
         if (!id) return;
@@ -38,12 +39,11 @@ function UploadDialog({ showDialog, setShowDialog, id }) {
                 if (!data.success) {
                     setAddedSubjects([]);
                     setSelectedSubjects([]);
-                    console.log(id);
                 }
                 else {
                     setAddedSubjects(data.subjectNames || []);
                     setSelectedSubjects(data.subjectNames || []);
-                    console.log(id);
+                    setIsUpdate(true);
                 }
             } catch (error) {
                 console.error(error);
@@ -67,23 +67,46 @@ function UploadDialog({ showDialog, setShowDialog, id }) {
     const handleUpdate = async () => {
 
         const SubjectList = Array.from(new Set(selectedSubjects));
-        try {
-            console.log(SubjectList);
-            const response = await axios.post(
-                `${backendURL}/exam/addsubjects?id=${id}`,
-                { SubjectList },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    withCredentials: true,
+        if (isUpdate) {
+            try {
+                const response = await axios.put(`${backendURL}/updateSubs?id=${id}`, {
+                    SubjectList
+                },
+                    {
+                        headers: {
+                        "Content-Type":"application/json"
+                        },
+                        withCredentials: true,
+                    })
+                if (!response.data.success) {
+                    return toast.error(response.data.message)
                 }
-            );
-            console.log(response);
-            toast.success(response.data.message);
-            setShowDialog(false);
-        } catch (error) {
-            console.log(error);
+                toast.success(response.data.message);
+                setShowDialog(false);
+            } catch (error) {
+                console.log(error)
+                toast.error("Something went wrong")
+            }
+        }
+        else {
+            try {
+                console.log(SubjectList);
+                const response = await axios.post(
+                    `${backendURL}/exam/addsubjects?id=${id}`,
+                    { SubjectList },
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        withCredentials: true,
+                    }
+                );
+                console.log(response);
+                toast.success(response.data.message);
+                setShowDialog(false);
+            } catch (error) {
+                console.log(error);
+            }
         }
     };
 
