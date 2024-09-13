@@ -6,7 +6,7 @@ import { LoginContext } from '../main';
 
 function Profile() {
     const { user} = useContext(LoginContext)
-   //todo: update user here itself(later part)
+
   return (
       <>
           <Header />

@@ -2,11 +2,11 @@ import React, { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, Container } from '@mui/system';
 import { Grid, Table, TableRow, TableContainer, TableHead, Typography } from '@mui/material';
-import toast from 'react-hot-toast';
+
 import logo from '../assets/logo.jpg'
 
 function Result({ result }) {
-    const location = useLocation();
+
 
     const styles = {
         header: {
