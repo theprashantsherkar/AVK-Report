@@ -121,7 +121,7 @@ function Dashboard() {
         const assessmentId = details._id;
 
         try {
-            if (details.type === "Numeric") {
+            if (details?.type === "Numeric") {
                 const { data } = await axios.post(`${backendURL}/report/sendEachMarks/?examId=${examId}&assessmentId=${assessmentId}&studentId=${studentId}`, {
                     marks: marks[studentId],
                     remarks: remarks[studentId],
@@ -135,8 +135,8 @@ function Dashboard() {
                     toast.error("Something went wrong");
                 }
                 toast.success(data.message);
-            } else if (details.type === "Graded") {
-                if (details.isRubrics === "Yes") {
+            } else if (details?.type === "Graded") {
+                if (details?.isRubrics === "Yes") {
                     const { data } = await axios.post(`${backendURL}/report/sendEachGrades/?examId=${examId}&assessmentId=${assessmentId}&studentId=${studentId}`, {
                         grade: grades[studentId],
                         remarks: remarks[studentId],
@@ -297,8 +297,8 @@ function Dashboard() {
                                         <th>Roll</th>
                                         <th>Name</th>
                                         <th>Class Section</th>
-                                        {details.type === "Numeric" ? <th>Max Marks</th> : (details.isRubrics === "Yes" ? <th>Rubrics</th> : null)}
-                                        {details.type === "Numeric" ? <th>Marks</th> : <th>Grades</th>}
+                                        {details?.type === "Numeric" ? <th>Max Marks</th> : (details?.isRubrics === "Yes" ? <th>Rubrics</th> : null)}
+                                        {details?.type === "Numeric" ? <th>Marks</th> : <th>Grades</th>}
                                         <th>Remarks</th>
                                         <th>Actions</th>
                                     </tr>
@@ -310,9 +310,9 @@ function Dashboard() {
                                                 <td>{student.rollNo}</td>
                                                 <td>{student.name}</td>
                                                 <td>{`${student.Class} - ${student.section}`}</td>
-                                                {details.type === "Numeric" ? (
+                                                {details?.type === "Numeric" ? (
                                                     <>
-                                                        <td>{details.maxMarks}</td>
+                                                        <td>{details?.maxMarks}</td>
                                                         <td>
                                                             <input className='border border-black px-1' onLoad={(e) => loadMarks(e, student._id)} type="text" name=""
                                                                 value={marks[student._id] || ''}
@@ -320,7 +320,7 @@ function Dashboard() {
                                                         </td>
                                                     </>
                                                 ) : (
-                                                    details.isRubrics === "Yes" ? <>
+                                                    details?.isRubrics === "Yes" ? <>
                                                         <td>
                                                             {titles.length > 0 ? titles.map((element, idx) => (
                                                                 <div className='py-2' key={idx}>{element.rubric}</div>

@@ -24,27 +24,32 @@ export const addAssessment = async(req, res) => {
 
     const parentExam = await Exam.findById(examId);
 
-    const { title, subject, term, type, maxMarks, isRubrics} = req.body;
-    if (!title || !subject || !term || !type) {
+    const { title, selectedOptions, term, type, maxMarks, isRubrics} = req.body;
+    if (!title || !selectedOptions.length || !term || !type) {
         return res.status(500).json({
             success: false,
             message: "Please enter all fields"
         })
     }
 
-    const assessment = await Assessment.create({
-        title,
-        type,
-        term,
-        subject,
-        maxMarks,
-        isRubrics,
-        parentExam: examId,
-        Class: parentExam.Class,
+    const subjectNames = selectedOptions.map(item => item.subject)
 
+    const assessments = subjectNames.map(async(subject) => {
+        await Assessment.create({
+            title,
+            type,
+            term,
+            subject,
+            maxMarks,
+            isRubrics,
+            parentExam: examId,
+            Class: parentExam.Class,
+
+        })
     })
 
-    if (!assessment) {
+
+    if (!assessments.length) {
         return res.status(500).json({
             success: false,
             message:"Assessment not created, Try again!"
@@ -55,7 +60,7 @@ export const addAssessment = async(req, res) => {
     return res.status(200).json({
         success: true,
         message: "Assessment created successfully",
-        assessment,
+        assessments,
     })
 }
 
@@ -68,7 +73,7 @@ export const specificAss = async (req, res) => {
             message: "Exam id not found",
         })
     }
-    
+
     const assessment = await Assessment.find({ parentExam: examId }).populate("rubrics");
     if (!assessment || assessment.length == 0) {
         return res.status(404).json({
@@ -169,15 +174,11 @@ export const sendSubs = async (req, res, next) => {
 
     }
 
-    const subjectNames = [];
-
-    subjects.map((element) => {
-        subjectNames.push(element.subject);
-    })
+    
     res.status(200).json({
         success: true,
         message: "subjects sent",
-        subjectNames
+        subjects,
     })
 }
 

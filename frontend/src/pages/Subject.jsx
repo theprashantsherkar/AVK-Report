@@ -14,24 +14,51 @@ import toast from 'react-hot-toast';
 
 function Subject() {
     const [subject, setSubject] = useState('');
+    const [isUpdate, setIsUpdate] = useState(false);
     const [subjectData, setSubjectData] = useState([]);
-    const handleSubjects = async () => {
-        if (!subject) {
-            return toast.error('enter subjects first')
-        }
-        const { data } = await axios.post(`${backendURL}/subject/addSubject`, {
-            subject
-        }, {
-            headers: {
-                "Content-Type":"application/json"
-            },
-            withCredentials: true,
+    const [id, setId] = useState("");
 
-        })
-        toast.success(data.message);
+    const handleUpdate = (value, subject, id) => {
+        setSubject(subject)
+        setIsUpdate(true)
+        setId(id);
+
     }
 
-    const removeSubject = async(id) => {
+    const handleSubjects = async (id) => {
+        if (isUpdate) {
+            const response = await axios.put(`${backendURL}/subject/${id}`, {
+                subject: subject,
+            },
+                {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    withCredentials: true,
+                })
+            if (!response.data.success) {
+                return toast.error(response.data.message)
+            }
+            toast.success(response.data.message)
+            setSubject("");
+            setIsUpdate(false);
+
+        } else {
+            const { data } = await axios.post(`${backendURL}/subject/addSubject`, {
+                subject
+            }, {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                withCredentials: true,
+
+            })
+            toast.success(data.message);
+            setSubject('');
+        }
+    }
+
+    const removeSubject = async (id) => {
         const res = await axios.delete(`${backendURL}/subject/${id}`, {
             headers: {
                 "Content-Type": "application/json",
@@ -43,13 +70,13 @@ function Subject() {
     }
 
     useEffect(() => {
-        const fetchSubjects = async() => {
-            const {data} = await axios.get(`${backendURL}/subject/getSubjects`, 
+        const fetchSubjects = async () => {
+            const { data } = await axios.get(`${backendURL}/subject/getSubjects`,
                 {
                     headers: {
-                        "Content-Type":"applcation/json"
+                        "Content-Type": "applcation/json"
                     },
-                    withCredentials:true,
+                    withCredentials: true,
                 }
             )
             setSubjectData(data.subjects)
@@ -60,7 +87,7 @@ function Subject() {
     return (
         <>
             <div>
-                <Header/>
+                <Header />
                 <div className='flex items-start w-full min-h-screen'>
                     <div className='w-1/6'>
                         <Sidebar />
@@ -73,14 +100,14 @@ function Subject() {
                         <div className='flex items-center  gap-4'>
                             <Box sx={{ width: '300px' }}>
                                 <FormControl fullWidth>
-                                    <TextField id="outlined-basic" label="Add Subject" variant="outlined" fullWidth  value={subject} onChange={(e) => setSubject(e.target.value)} />
+                                    <TextField id="outlined-basic" label="Add Subject" variant="outlined" fullWidth value={subject} onChange={(e) => setSubject(e.target.value)} />
                                 </FormControl>
                             </Box>
 
 
-                            <button className='btn btn-primary' onClick={handleSubjects}>Save Subject</button>
+                            <button className='btn btn-primary' onClick={()=>handleSubjects(id)}>{isUpdate ? "Update Subject" : " Save Subject"}</button>
                         </div>
-                        
+
                         <hr />
                         <div>
                             {subjectData && (
@@ -100,11 +127,11 @@ function Subject() {
                                                 <td>{index + 1}</td>
                                                 <td>{element.subject}</td>
                                                 <td>
-                                                    <button onClick={() => removeSubject(element._id)} className='btn btn-danger p-1'><DeleteForeverIcon/></button>
+                                                    <button onClick={() => removeSubject(element._id)} className='btn btn-danger p-1'><DeleteForeverIcon /></button>
                                                     {"     "}
-                                                    <button className='btn btn-warning p-1'><EditIcon /></button>
+                                                    <button className='btn btn-warning p-1' onClick={(e) => handleUpdate(e.target.value, element.subject, element._id)}><EditIcon /></button>
                                                 </td>
-                                        </tr>
+                                            </tr>
                                         ))}
                                     </tbody>
                                 </table>

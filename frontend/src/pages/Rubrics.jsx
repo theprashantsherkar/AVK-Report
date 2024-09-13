@@ -64,7 +64,6 @@ function Rubrics({ subject }) {
                 if (!response.data.success) {
                     return toast.error('Something went wrong');
                 }
-                // console.log(updatedRubric);
 
                 setUpdatedRubric(response.data.updatedRubric);
                 toast.success(response.data.message);

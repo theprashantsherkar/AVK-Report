@@ -3,7 +3,7 @@ import Header from '../components/Header'
 import Sidebar from '../components/Sidebar'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link, useParams } from 'react-router-dom';
-import { Box, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { Autocomplete, Box, Chip, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import axios from 'axios';
 import { backendURL } from '../App';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -21,9 +21,11 @@ function Assessment() {
     const [subjectList, setSubjectList] = useState([]);
     const [subject, setSubject] = useState('');
     const [type, setType] = useState('');
-    const [isRubrics, setIsRubrics] = useState(false);
+    const [isRubrics, setIsRubrics] = useState();
     const { canEdit } = useContext(LoginContext);
     const [assList, setAssList] = useState([]);
+    const [selectedOptions, setSelectedOptions] = useState([]);
+
 
     const deleteHandler = async (id) => {
         console.log(id);
@@ -47,14 +49,14 @@ function Assessment() {
 
     const handleSubmit = async () => {
         try {
-            if (!title || !term || !type || !subject) {
+            if (!title || !term || !type || !selectedOptions.length) {
                 console.log("Every field is mandatory!")
                 return toast.error("Every field is mandatory!")
             }
             const response = await axios.post(`${backendURL}/assessment/${id}`, {
                 title,
                 term,
-                subject,
+                selectedOptions,
                 type,
                 maxMarks,
                 isRubrics,
@@ -69,7 +71,11 @@ function Assessment() {
                 return toast.error('Something went wrong')
             }
             toast.success(response.data.message);
-            setMaxMarks();
+            setMaxMarks("");
+            setSelectedOptions([]);
+            setTerm("");
+            setTitle("");
+            setType("");
             setIsRubrics("");
 
         } catch (error) {
@@ -87,7 +93,7 @@ function Assessment() {
                         },
                         withCredentials: true,
                     });
-                    setSubjectList(response.data.subjectNames);
+                    setSubjectList(response.data.subjects);
                 } catch (error) {
                     console.error("Error fetching subjects:", error);
                 }
@@ -175,22 +181,36 @@ function Assessment() {
                             <div>
                                 <Box sx={{ width: '300px', marginY: "10px" }}>
                                     <FormControl fullWidth>
-                                        <InputLabel id="demo-simple-select-label">Select Subject</InputLabel>
-                                        <Select
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
-                                            value={subject}
-                                            label="Select Assessment"
-                                            onChange={(e) => setSubject(e.target.value)}
-                                        >
-                                            {subjectList && subjectList.length > 0 ? (
-                                                subjectList.map((element, index) => (
-                                                    <MenuItem key={index} value={element}>{element}</MenuItem>
+                                        <Autocomplete
+                                            multiple
+                                            id="multiple-select-with-search"
+                                            options={subjectList}
+                                            getOptionLabel={(option) => option.subject}
+                                            value={selectedOptions}
+                                            onChange={(event, newValue) => {
+                                                setSelectedOptions(newValue);
+                                            }}
+                                            renderTags={(tagValue, getTagProps) =>
+                                                tagValue.map((option, index) => (
+                                                    <Chip
+                                                        variant='outlined'
+                                                        key={option._id}
+                                                        label={option.subject}
+                                                        {...getTagProps({ index })}
+                                                        color="default"
+                                                    />
                                                 ))
-                                            ) : (
-                                                <MenuItem disabled>No Subjects Added</MenuItem>
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    variant="outlined"
+                                                    label="Select Subjects"
+                                                    placeholder="Type to search..."
+                                                />
                                             )}
-                                        </Select>
+                                            filterSelectedOptions
+                                        />
                                     </FormControl>
                                 </Box>
                                 <Box sx={{ width: '300px', marginY: "10px" }}>

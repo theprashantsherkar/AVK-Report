@@ -133,7 +133,7 @@ function Reports() {
 
     useEffect(() => {
         if (navigateReady) {
-            // console.log(studentResult);
+            console.log(studentResult);
             navigate(`/Dummy`, { state: { results: studentResult } });
             setNavigateReady(false);
         }
