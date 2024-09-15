@@ -7,12 +7,11 @@ import path, { dirname } from 'path';
 import { Student } from "../model/studentModel.js";
 
 
-//user Authentication apis
-
-
 export const getUsers = async (req, res, next) => {
     const users = await User.find({});
-    if (!users) {
+    const students = await Student.find({});
+
+    if (!users || !students) {
         return res.status(404).json({
             success: false,
             message: "no users found"
@@ -26,7 +25,8 @@ export const getUsers = async (req, res, next) => {
         success: true,
         message: "users found",
         names,
-        users
+        users,
+        students,
     })
 }
 

@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
+import html2pdf from 'html2pdf.js';
 
 function Dummy() {
     const location = useLocation();
@@ -12,33 +13,33 @@ function Dummy() {
 
     useEffect(() => {
         const generatePdf = async () => {
-            const input = document.getElementById('pdf-content');
-            const canvas = await html2canvas(input, { scale: 2 });
+            const element = document.getElementById('pdf-content'); // The element to be converted
 
-            const imgWidth = 297; // A4 width in mm for landscape
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            const pdf = new jsPDF('landscape', 'mm', 'a4');
+            const options = {
+                margin: [10, 10, 10, 10], // Margins to avoid cutting off content
+                filename: 'download.pdf', // Name of the PDF file
+                html2canvas: {
+                    scale: 4, // Increase scale for better re   ndering
+                    useCORS: true // Handle cross-origin images
+                },
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'landscape', // Change to 'landscape' if needed
+                    compress: true // Compress PDF to reduce file size
+                },
+                pagebreak: {
+                    mode: ['css', 'legacy'] // Handle page breaks properly
+                }
+            };
 
-            let heightLeft = imgHeight;
-            let position = 0;
-
-            pdf.addImage(canvas, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pdf.internal.pageSize.getHeight();
-
-            while (heightLeft > 0) {
-                position = heightLeft - imgHeight;
-                pdf.addPage();
-                pdf.addImage(canvas, 'PNG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pdf.internal.pageSize.getHeight();
-            }
-
-            pdf.save('download.pdf');
+            // Generate and download the PDF
+            html2pdf().set(options).from(element).save();
         };
-
         if (results) {
             generatePdf();
         }
-    }, [results]);
+    }, []);
 
     useEffect(() => {
         if (!results) {

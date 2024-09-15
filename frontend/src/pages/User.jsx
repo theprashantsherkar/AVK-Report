@@ -12,6 +12,8 @@ function User() {
     const [users, setUsers] = useState([]);
     const [data, setData] = useState([]);
     const [file, setFile] = useState("");
+    const [choice, setChoice] = useState("Students");
+    const [students, setStudents] = useState([]);
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -54,6 +56,7 @@ function User() {
 
             })
             setUsers(data.users);
+            setStudents(data.students);
         }
         fetchUsers();
     })
@@ -65,8 +68,11 @@ function User() {
                     <Sidebar />
                 </div>
                 <div className='w-4/5 p-4'>
-                    <div className='text-3xl font-semibold '>
-                        Users
+                    <div className='text-xl font-semibold '>
+                        <select className='border border-black rounded-md p-2' name="" value={choice} onChange={(e)=>setChoice(e.target.value)}  id="">
+                            <option value="Students">Students</option>
+                            <option value="Users">Users</option>
+                        </select>
                     </div>
                     <hr />
                     <div className='flex items-center  gap-4'>
@@ -101,19 +107,36 @@ function User() {
                                 <table className='w-full table-bordered table table-hover table-striped'>
                                     <thead>
                                         <tr className='py-2 font-semibold'>
-                                            <th>Sr. no</th>
+                                            <th style={{ backgroundColor: "#f2f2f2" }}>Sr. no</th>
                                             <th>Name</th>
                                             <th>Role</th>
+                                            {choice == 'Students' ? (<>
+                                                <th>Class</th>
+                                                <th>Admission No</th>
+                                                <th>Contact No</th>
+                                            </>) : (<></>)}
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {users.map((element, index) => (<>
+                                        {choice == "Users" ? (<>{users.map((element, index) => (<>
                                             <tr>
                                                 <td>{index + 1}</td>
                                                 <td>{element.name}</td>
                                                 <td>{element.role}</td>
+                                                <td><button className='btn btn-primary'>View</button></td>
                                             </tr>
-                                        </>))}
+                                        </>))}</>) : (<>{students.map((element, index) => (<tr>
+                                            <td>{index + 1}</td>
+                                            <td>{element.name}</td>
+                                            <td>Student</td>
+                                            <td>{`${element.Class}-${element.section}`}</td>
+
+                                            <td>{element.AdmissionNo}</td>
+                                            <td>{element.ContactNo}</td>
+                                            <td><button className='btn btn-primary'>View</button></td>
+
+                                        </tr>)) }</>)}
                                     </tbody>
 
                                 </table>

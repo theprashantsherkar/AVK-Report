@@ -6,3 +6,16 @@
 .bgcolor{
     background-color: rgba(108,116,44,1);
 }
+
+.pagebreak{
+    page-break-before: always;
+}
+
+#pdf-content{
+    width: 297mm;
+    height: auto;
+}
+
+.vertical{
+    vertical-align: middle;
+}
